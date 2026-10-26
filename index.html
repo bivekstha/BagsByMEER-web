@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BagsByMeer | Handcrafted Artisan Bags from Nepal</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#fdfbf7',
+                            100: '#f7f2e7',
+                            200: '#ede2ce',
+                            600: '#8b6f54',
+                            700: '#6f563f',
+                            800: '#544130',
+                            900: '#3a2d21',
+                        }
+                    },
+                    fontFamily: {
+                        serif: ['Playfair Display', 'serif'],
+                        sans: ['Plus Jakarta Sans', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..700;1,400..700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-brand-50 text-brand-900 font-sans antialiased selection:bg-brand-200">
+
+    <!-- Announcement Bar -->
+    <div class="bg-brand-800 text-brand-100 text-xs py-2 px-4 text-center font-medium tracking-wider uppercase">
+        🇳🇵 Proudly Handcrafted in Nepal • Call/WhatsApp: <a href="tel:+9779861585576" class="underline hover:text-white">+977 9861585576</a>
+    </div>
+
+    <!-- Navigation -->
+    <header class="sticky top-0 z-40 bg-brand-50/90 backdrop-blur-md border-b border-brand-200 transition-all">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <button id="mobile-menu-btn" class="md:hidden text-brand-800 text-xl focus:outline-none">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+
+            <!-- Logo with Hover Effect -->
+            <a href="#" class="flex items-center space-x-3 group">
+                <div class="relative w-11 h-11 rounded-full overflow-hidden border-2 border-brand-600 shadow-md group-hover:scale-110 group-hover:rotate-6 transition duration-300">
+                    <img src="logo.jpg" alt="BagsByMeer Logo" class="w-full h-full object-cover">
+                </div>
+                <span class="font-serif text-2xl sm:text-3xl font-bold tracking-tight text-brand-800 group-hover:text-brand-600 transition">
+                    Bags<span class="italic font-normal text-brand-600">By</span>Meer
+                </span>
+            </a>
+
+            <nav class="hidden md:flex items-center space-x-8 text-sm font-medium tracking-wide">
+                <a href="#home" class="hover:text-brand-600 transition">Home</a>
+                <a href="#shop" class="hover:text-brand-600 transition">Collection</a>
+                <a href="#story" class="hover:text-brand-600 transition">Our Story</a>
+                <a href="#contact" class="hover:text-brand-600 transition">Contact</a>
+            </nav>
+
+            <div class="flex items-center space-x-4">
+                <button id="admin-toggle-btn" class="text-xs bg-brand-200/70 hover:bg-brand-200 text-brand-800 px-3 py-1.5 rounded-lg font-medium transition" title="Open Database Admin">
+                    <i class="fa-solid fa-lock mr-1"></i> Admin
+                </button>
+                <button id="cart-btn" class="relative text-brand-800 hover:text-brand-600 transition focus:outline-none">
+                    <i class="fa-solid fa-bag-shopping text-xl"></i>
+                    <span id="cart-badge" class="absolute -top-2 -right-2 bg-brand-700 text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center shadow-sm">0</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Mobile Navigation Drawer -->
+    <div id="mobile-menu" class="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm hidden">
+        <div class="bg-brand-50 w-3/4 max-w-xs h-full shadow-2xl p-6 flex flex-col justify-between">
+            <div>
+                <div class="flex justify-between items-center mb-8">
+                    <span class="font-serif text-xl font-bold text-brand-800">BagsByMeer</span>
+                    <button id="close-mobile-menu" class="text-brand-800 text-lg"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+                <nav class="flex flex-col space-y-4 text-base font-medium">
+                    <a href="#home" class="mobile-link text-brand-800 hover:text-brand-600">Home</a>
+                    <a href="#shop" class="mobile-link text-brand-800 hover:text-brand-600">Collection</a>
+                    <a href="#story" class="mobile-link text-brand-800 hover:text-brand-600">Our Story</a>
+                    <a href="#contact" class="mobile-link text-brand-800 hover:text-brand-600">Contact</a>
+                </nav>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hero Section -->
+    <section id="home" class="relative overflow-hidden pt-12 pb-20 lg:py-28">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                <div class="lg:col-span-7 space-y-6 text-center lg:text-left">
+                    <span class="inline-block bg-brand-200/70 text-brand-800 text-xs font-semibold tracking-widest uppercase px-3 py-1 rounded-full">
+                        🇳🇵 Made with love & perfection in Nepal
+                    </span>
+                    <h1 class="font-serif text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-brand-900 leading-[1.1]">
+                        Stitched in Nepal, <br><span class="italic font-normal text-brand-600">carried</span> worldwide.
+                    </h1>
+                    <p class="text-brand-700 text-base sm:text-lg max-w-xl mx-auto lg:mx-0 font-light">
+                        Discover exquisite handmade bags crafted with absolute precision, sustainable fabrics, and authentic Nepalese artisan dedication.
+                    </p>
+                    <div class="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-4">
+                        <a href="#shop" class="w-full sm:w-auto bg-brand-800 text-brand-50 px-8 py-4 rounded-full font-medium hover:bg-brand-700 transition shadow-lg shadow-brand-800/10 text-center">
+                            Explore Collection
+                        </a>
+                        <a href="tel:+9779861585576" class="w-full sm:w-auto border border-brand-300 text-brand-800 px-8 py-4 rounded-full font-medium hover:bg-brand-100 transition text-center flex items-center justify-center space-x-2">
+                            <i class="fa-solid fa-phone text-brand-600"></i>
+                            <span>+977 9861585576</span>
+                        </a>
+                    </div>
+                </div>
+                <div class="lg:col-span-5 relative">
+                    <div class="relative rounded-3xl overflow-hidden shadow-2xl aspect-[4/5] bg-brand-200">
+                        <img src="logo.jpg" alt="BagsByMeer Signature Bag" class="w-full h-full object-cover">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Shop / Collection Section -->
+    <section id="shop" class="py-20 lg:py-28 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center max-w-2xl mx-auto mb-12">
+            <span class="text-brand-600 font-semibold tracking-wider text-xs uppercase">Curated Catalog</span>
+            <h2 class="font-serif text-3xl sm:text-5xl font-bold text-brand-900 mt-2 mb-4">Handcrafted Masterpieces</h2>
+            <p class="text-brand-700 font-light">Managed live via your database inventory.</p>
+        </div>
+
+        <!-- Filter Categories -->
+        <div class="flex flex-wrap justify-center gap-3 mb-12">
+            <button class="filter-btn active-filter bg-brand-800 text-brand-50 px-6 py-2.5 rounded-full text-sm font-medium transition shadow-sm" data-filter="all">All Bags</button>
+            <button class="filter-btn bg-brand-200/60 text-brand-800 px-6 py-2.5 rounded-full text-sm font-medium hover:bg-brand-200 transition" data-filter="tote">Tote Bags</button>
+            <button class="filter-btn bg-brand-200/60 text-brand-800 px-6 py-2.5 rounded-full text-sm font-medium hover:bg-brand-200 transition" data-filter="crossbody">Crossbody</button>
+            <button class="filter-btn bg-brand-200/60 text-brand-800 px-6 py-2.5 rounded-full text-sm font-medium hover:bg-brand-200 transition" data-filter="backpack">Backpacks</button>
+        </div>
+
+        <!-- Product Grid -->
+        <div id="product-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div class="col-span-full text-center py-12 text-brand-600">Loading live inventory from database...</div>
+        </div>
+    </section>
+
+    <!-- Our Story Section -->
+    <section id="story" class="py-20 bg-brand-100/60 border-y border-brand-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                <div class="lg:col-span-6 grid grid-cols-2 gap-4">
+                    <img src="logo.jpg" alt="Crafting process" class="rounded-2xl shadow-md w-full h-64 object-cover">
+                    <img src="logo.jpg" alt="Bag details" class="rounded-2xl shadow-md w-full h-64 object-cover mt-8">
+                </div>
+                <div class="lg:col-span-6 space-y-6">
+                    <span class="text-brand-600 font-semibold tracking-wider text-xs uppercase">Behind The Seams</span>
+                    <h2 class="font-serif text-3xl sm:text-4xl font-bold text-brand-900">Crafted with Passion in Nepal</h2>
+                    <p class="text-brand-700 font-light leading-relaxed">
+                        "BagsByMeer started out of a deep passion for textiles, texture, and mindful fashion in Nepal. Every stitch is deliberate, every fabric is hand-selected, and every design tells a story of patience and artistry."
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact & Social Section -->
+    <section id="contact" class="py-20 bg-white border-y border-brand-200">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-8">
+            <span class="text-brand-600 font-semibold tracking-wider text-xs uppercase">Get in Touch</span>
+            <h2 class="font-serif text-3xl sm:text-4xl font-bold text-brand-900">Connect with BagsByMeer</h2>
+            <p class="text-brand-700 font-light max-w-xl mx-auto">
+                Have questions about custom designs or placing an order from Nepal? Reach out to us directly through phone or our social channels!
+            </p>
+            <div class="flex flex-wrap justify-center gap-6 pt-2">
+                <a href="tel:+9779861585576" class="flex items-center space-x-3 bg-brand-50 px-6 py-4 rounded-2xl shadow-sm border border-brand-200 hover:shadow-md transition text-brand-900 font-medium">
+                    <i class="fa-solid fa-phone text-brand-600 text-lg"></i>
+                    <span>+977 9861585576</span>
+                </a>
+                <a href="https://www.instagram.com/bagsbymeer?obrf=aXFwNG8xcjF1cHl4" target="_blank" class="flex items-center space-x-3 bg-brand-50 px-6 py-4 rounded-2xl shadow-sm border border-brand-200 hover:shadow-md transition text-brand-900 font-medium">
+                    <i class="fa-brands fa-instagram text-pink-600 text-lg"></i>
+                    <span>Instagram (@bagsbymeer)</span>
+                </a>
+                <a href="https://www.tiktok.com/@bagsbymeer?_r=1&_d=elbda8khl2j5ek&sec_uid=MS4wLjABAAAAfqqQ1bohcpgexE5M1QcLBO25CvdwbYAkCOCc7_FMsHmrPvnouwyN9BHJxOpL4AhT&share_author_id=7695740789067039752&sharer_language=en&source=h5_m&u_code=dkl8h1jg6l551l&timestamp=1793035363&user_id=7011136375831430170&sec_user_id=MS4wLjABAAAAiOlHE2-FlpYiCcmuUGm2q0LmlDOS2ZF919uW64IAe11zCREUp57TwPUSi6MNd-nh&item_author_type=2&utm_source=copy&utm_campaign=client_share&utm_medium=android&share_iid=7659908335160166164&share_link_id=21137e7b-0489-406a-9da8-d2bcd3f6a46b&share_app_id=1233&ugbiz_name=ACCOUNT&ug_btm=b5836&social_share_type=5&share_enter_from=others_homepage&item_author_type=2&enable_checksum=1" target="_blank" class="flex items-center space-x-3 bg-brand-50 px-6 py-4 rounded-2xl shadow-sm border border-brand-200 hover:shadow-md transition text-brand-900 font-medium">
+                    <i class="fa-brands fa-tiktok text-black text-lg"></i>
+                    <span>TikTok (@bagsbymeer)</span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-brand-900 text-brand-100 pt-16 pb-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-3 gap-10 mb-12">
+            <div class="space-y-4">
+                <span class="font-serif text-2xl font-bold text-white">Bags<span class="italic font-normal text-brand-200">By</span>Meer</span>
+                <p class="text-brand-200/80 text-sm font-light">
+                    Handcrafted with love and perfection in Nepal. Bringing artisanal elegance to your daily routine.
+                </p>
+            </div>
+            <div>
+                <h4 class="font-semibold text-white mb-4 text-sm tracking-wider uppercase">Contact Info</h4>
+                <ul class="space-y-2 text-sm text-brand-200/80">
+                    <li><i class="fa-solid fa-location-dot mr-2"></i> Made in Nepal</li>
+                    <li><i class="fa-solid fa-phone mr-2"></i> +977 9861585576</li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="font-semibold text-white mb-4 text-sm tracking-wider uppercase">Follow Us</h4>
+                <div class="flex space-x-4 text-xl">
+                    <a href="https://www.instagram.com/bagsbymeer?obrf=aXFwNG8xcjF1cHl4" target="_blank" class="hover:text-white transition"><i class="fa-brands fa-instagram"></i></a>
+                    <a href="https://www.tiktok.com/@bagsbymeer?_r=1&_d=elbda8khl2j5ek&sec_uid=MS4wLjABAAAAfqqQ1bohcpgexE5M1QcLBO25CvdwbYAkCOCc7_FMsHmrPvnouwyN9BHJxOpL4AhT&share_author_id=7695740789067039752&sharer_language=en&source=h5_m&u_code=dkl8h1jg6l551l&timestamp=1793035363&user_id=7011136375831430170&sec_user_id=MS4wLjABAAAAiOlHE2-FlpYiCcmuUGm2q0LmlDOS2ZF919uW64IAe11zCREUp57TwPUSi6MNd-nh&item_author_type=2&utm_source=copy&utm_campaign=client_share&utm_medium=android&share_iid=7659908335160166164&share_link_id=21137e7b-0489-406a-9da8-d2bcd3f6a46b&share_app_id=1233&ugbiz_name=ACCOUNT&ug_btm=b5836&social_share_type=5&share_enter_from=others_homepage&item_author_type=2&enable_checksum=1" target="_blank" class="hover:text-white transition"><i class="fa-brands fa-tiktok"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 border-t border-brand-800 text-center text-xs text-brand-300">
+            &copy; 2026 BagsByMeer. Handcrafted with love and perfection in Nepal. All rights reserved.
+        </div>
+    </footer>
+
+    <!-- ADMIN MODAL DASHBOARD (CRUD Management) -->
+    <div id="admin-modal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-white rounded-3xl max-w-3xl w-full p-8 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center pb-4 border-b border-brand-200 mb-6">
+                <h3 class="font-serif text-2xl font-bold text-brand-900"><i class="fa-solid fa-database mr-2"></i> BagsByMeer Inventory Manager</h3>
+                <button id="close-admin" class="text-brand-900 text-xl font-bold"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <!-- Add / Edit Form -->
+            <form id="product-form" class="bg-brand-50 p-6 rounded-2xl border border-brand-200 mb-8 space-y-4">
+                <input type="hidden" id="edit-product-id">
+                <h4 id="form-title" class="font-bold text-brand-900 text-lg">Add New Item</h4>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold uppercase text-brand-700 mb-1">Bag Name</label>
+                        <input type="text" id="p-name" required class="w-full bg-white border border-brand-200 rounded-xl px-4 py-2 text-sm focus:outline-brand-600">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold uppercase text-brand-700 mb-1">Category</label>
+                        <select id="p-category" class="w-full bg-white border border-brand-200 rounded-xl px-4 py-2 text-sm focus:outline-brand-600">
+                            <option value="tote">Tote</option>
+                            <option value="crossbody">Crossbody</option>
+                            <option value="backpack">Backpack</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold uppercase text-brand-700 mb-1">Price ($)</label>
+                        <input type="number" step="0.01" id="p-price" required class="w-full bg-white border border-brand-200 rounded-xl px-4 py-2 text-sm focus:outline-brand-600">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold uppercase text-brand-700 mb-1">Stock Status</label>
+                        <select id="p-stock" class="w-full bg-white border border-brand-200 rounded-xl px-4 py-2 text-sm focus:outline-brand-600">
+                            <option value="in">In Stock</option>
+                            <option value="out">Out of Stock</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold uppercase text-brand-700 mb-1">Image URL (or upload file below)</label>
+                    <input type="url" id="p-image" placeholder="https://images.unsplash.com/..." class="w-full bg-white border border-brand-200 rounded-xl px-4 py-2 text-sm focus:outline-brand-600 mb-2">
+                    <input type="file" id="p-file" accept="image/*" class="text-xs text-brand-700">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold uppercase text-brand-700 mb-1">Description</label>
+                    <textarea id="p-desc" rows="2" class="w-full bg-white border border-brand-200 rounded-xl px-4 py-2 text-sm focus:outline-brand-600"></textarea>
+                </div>
+                <div class="flex justify-end space-x-3 pt-2">
+                    <button type="button" id="reset-form" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-xl text-sm font-medium">Cancel</button>
+                    <button type="submit" id="save-product-btn" class="px-6 py-2 bg-brand-800 text-white rounded-xl text-sm font-medium hover:bg-brand-700">Save Item to Database</button>
+                </div>
+            </form>
+
+            <h4 class="font-bold text-brand-900 text-lg mb-4">Current Database Inventory</h4>
+            <div id="admin-product-list" class="space-y-3 max-h-60 overflow-y-auto"></div>
+        </div>
+    </div>
+
+    <!-- Shopping Cart Drawer -->
+    <div id="cart-drawer" class="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm hidden flex justify-end">
+        <div class="bg-brand-50 w-full max-w-md h-full shadow-2xl flex flex-col justify-between p-6">
+            <div>
+                <div class="flex items-center justify-between pb-4 border-b border-brand-200">
+                    <h3 class="font-serif text-xl font-bold text-brand-900">Your Shopping Bag (<span id="cart-count-header">0</span>)</h3>
+                    <button id="close-cart" class="text-brand-800 text-xl"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+                <div id="cart-items" class="py-6 space-y-4 overflow-y-auto max-h-[50vh]"></div>
+            </div>
+            <div class="border-t border-brand-200 pt-4 space-y-4">
+                <div class="flex justify-between items-center text-lg font-bold text-brand-900">
+                    <span>Subtotal:</span>
+                    <span id="cart-subtotal">$0.00</span>
+                </div>
+                <button onclick="alert('Proceeding to checkout!');" class="w-full bg-brand-800 text-white py-3.5 rounded-xl font-medium hover:bg-brand-700 transition">
+                    Proceed to Checkout
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script File Link -->
+    <script type="module" src="script.js"></script>
+</body>
+</html>
