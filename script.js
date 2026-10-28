@@ -243,6 +243,46 @@ document.getElementById('reset-form').addEventListener('click', () => {
 document.getElementById('cart-btn').addEventListener('click', () => document.getElementById('cart-drawer').classList.remove('hidden'));
 document.getElementById('close-cart').addEventListener('click', () => document.getElementById('cart-drawer').classList.add('hidden'));
 document.getElementById('mobile-menu-btn').addEventListener('click', () => document.getElementById('mobile-menu').classList.remove('hidden'));
+// Function to auto-fill the query text when a quick button is clicked
+window.setQuery = function(questionText) {
+    document.getElementById('inquiry-message').value = questionText;
+    document.getElementById('inquiry-message').focus();
+}
+
+// Handle Customer Inquiry Submission
+const inquiryForm = document.getElementById('inquiry-form');
+if (inquiryForm) {
+    inquiryForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const name = document.getElementById('inquiry-name').value;
+        const contact = document.getElementById('inquiry-contact').value;
+        const message = document.getElementById('inquiry-message').value;
+        const submitBtn = document.getElementById('inquiry-submit-btn');
+
+        submitBtn.textContent = 'Sending...';
+        submitBtn.disabled = true;
+
+        try {
+            // Save the customer inquiry into a 'messages' collection in Firestore
+            await addDoc(collection(db, "messages"), {
+                name,
+                contact,
+                message,
+                timestamp: new Date().toISOString()
+            });
+
+            alert('Thank you! Your message has been sent successfully to BagsByMeer.');
+            inquiryForm.reset();
+            submitBtn.textContent = 'Send Inquiry';
+            submitBtn.disabled = false;
+        } catch (error) {
+            console.error("Error sending inquiry:", error);
+            alert('Failed to send message. Please try again.');
+            submitBtn.textContent = 'Send Inquiry';
+            submitBtn.disabled = false;
+        }
+    });
+}
 document.getElementById('close-mobile-menu').addEventListener('click', () => document.getElementById('mobile-menu').classList.add('hidden'));
 
 // Initial Load
