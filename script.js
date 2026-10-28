@@ -237,37 +237,22 @@ window.setQuery = function(questionText) {
     document.getElementById('inquiry-message').focus();
 }
 
-// Handle Customer Inquiry Submission to Firestore
+// Handle Customer Inquiry Submission via Email Client
 const inquiryForm = document.getElementById('inquiry-form');
 if (inquiryForm) {
-    inquiryForm.addEventListener('submit', async (e) => {
+    inquiryForm.addEventListener('submit', (e) => {
         e.preventDefault();
         const name = document.getElementById('inquiry-name').value;
         const contact = document.getElementById('inquiry-contact').value;
         const message = document.getElementById('inquiry-message').value;
-        const submitBtn = document.getElementById('inquiry-submit-btn');
 
-        submitBtn.textContent = 'Sending...';
-        submitBtn.disabled = true;
+        // Replace with your personal email address
+        const myEmail = "bagsbymeer@gmail.com"; 
 
-        try {
-            await addDoc(collection(db, "messages"), {
-                name,
-                contact,
-                message,
-                timestamp: new Date().toISOString()
-            });
+        const subject = encodeURIComponent(`New Inquiry from ${name} - BagsByMeer`);
+        const body = encodeURIComponent(`Name: ${name}\nContact: ${contact}\n\nMessage:\n${message}`);
 
-            alert('Thank you! Your message has been sent successfully to BagsByMeer.');
-            inquiryForm.reset();
-            submitBtn.textContent = 'Send Inquiry';
-            submitBtn.disabled = false;
-        } catch (error) {
-            console.error("Error sending inquiry:", error);
-            alert('Failed to send message. Please try again.');
-            submitBtn.textContent = 'Send Inquiry';
-            submitBtn.disabled = false;
-        }
+        window.location.href = `mailto:${myEmail}?subject=${subject}&body=${body}`;
     });
 }
 
