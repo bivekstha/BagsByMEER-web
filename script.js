@@ -1,7 +1,6 @@
-// --- FIREBASE CONFIGURATION (Replace with your Firebase project keys) ---
+// --- FIREBASE CONFIGURATION ---
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { getFirestore, collection, getDocs, addDoc, updateDoc, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
 
 const firebaseConfig = {
     apiKey: "AIzaSyAU1Ahk2asBAEGZ-rjqfQ08iwA6i8XVUKa",
@@ -15,7 +14,6 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-const storage = getStorage(app);
 
 let products = [];
 let cart = [];
@@ -86,7 +84,7 @@ function renderProducts(filter = 'all') {
     });
 }
 
-// Render Admin List (for editing/deleting items)
+// Render Admin List
 function renderAdminList() {
     adminProductList.innerHTML = '';
     products.forEach(p => {
@@ -113,7 +111,6 @@ function renderAdminList() {
 loginForm.addEventListener('submit', (e) => {
     e.preventDefault();
     const enteredPin = document.getElementById('admin-pin-input').value;
-    // Set your secure admin password here:
     if (enteredPin === 'Meer@Admin2026') {
         adminLoginModal.classList.add('hidden');
         document.getElementById('admin-pin-input').value = '';
@@ -123,7 +120,7 @@ loginForm.addEventListener('submit', (e) => {
     }
 });
 
-// Handle Form Submit (Add or Update Item)
+// Handle Form Submit (Add or Update Item via Firestore Database)
 productForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const editId = document.getElementById('edit-product-id').value;
@@ -132,22 +129,14 @@ productForm.addEventListener('submit', async (e) => {
     const price = parseFloat(document.getElementById('p-price').value);
     const stock = document.getElementById('p-stock').value;
     const description = document.getElementById('p-desc').value;
-    let image = document.getElementById('p-image').value;
-    const fileInput = document.getElementById('p-file');
+    let image = document.getElementById('p-image').value || 'logo.jpg';
 
     const saveBtn = document.getElementById('save-product-btn');
-    saveBtn.textContent = 'Saving to Cloud...';
+    saveBtn.textContent = 'Saving to Database...';
     saveBtn.disabled = true;
 
     try {
-        if (fileInput.files.length > 0) {
-            const file = fileInput.files[0];
-            const storageRef = ref(storage, `bags/${Date.now()}_${file.name}`);
-            const snapshot = await uploadBytes(storageRef, file);
-            image = await getDownloadURL(snapshot.ref);
-        }
-
-        const productData = { name, category, price, stock, description, image: image || 'logo.jpg' };
+        const productData = { name, category, price, stock, description, image };
 
         if (editId) {
             await updateDoc(doc(db, "bags", editId), productData);
