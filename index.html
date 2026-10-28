@@ -397,6 +397,50 @@
                 </button>
             </div>
         </div>
+        <!-- Quick Inquiry & Ask Questions Section -->
+<section id="inquiry" class="py-16 bg-brand-100/40 border-t border-brand-200">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-8">
+            <span class="text-brand-600 font-semibold tracking-wider text-xs uppercase">Got Questions?</span>
+            <h2 class="font-serif text-3xl font-bold text-brand-900 mt-1">Ask Us Anything</h2>
+            <p class="text-brand-700 text-sm font-light mt-2">Select a common question below or type your own custom inquiry.</p>
+        </div>
+
+        <!-- Pre-defined Query Buttons -->
+        <div class="flex flex-wrap justify-center gap-2 mb-6">
+            <button type="button" onclick="setQuery('Do you take custom bag designs and sizes?')" class="bg-white border border-brand-200 text-brand-800 text-xs px-4 py-2 rounded-full hover:bg-brand-800 hover:text-white transition shadow-sm">
+                ✨ Custom bag designs?
+            </button>
+            <button type="button" onclick="setQuery('What is the delivery time within Nepal?')" class="bg-white border border-brand-200 text-brand-800 text-xs px-4 py-2 rounded-full hover:bg-brand-800 hover:text-white transition shadow-sm">
+                🚚 Delivery time in Nepal?
+            </button>
+            <button type="button" onclick="setQuery('What payment methods do you accept?')" class="bg-white border border-brand-200 text-brand-800 text-xs px-4 py-2 rounded-full hover:bg-brand-800 hover:text-white transition shadow-sm">
+                💳 Payment methods?
+            </button>
+        </div>
+
+        <!-- Inquiry Form -->
+        <form id="inquiry-form" class="bg-white p-6 sm:p-8 rounded-3xl border border-brand-200 shadow-sm space-y-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs font-semibold uppercase text-brand-700 mb-1">Your Name</label>
+                    <input type="text" id="inquiry-name" required placeholder="Enter your name..." class="w-full bg-brand-50 border border-brand-200 rounded-xl px-4 py-2.5 text-sm focus:outline-brand-600">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold uppercase text-brand-700 mb-1">Phone or Email</label>
+                    <input type="text" id="inquiry-contact" required placeholder="Phone number / Email..." class="w-full bg-brand-50 border border-brand-200 rounded-xl px-4 py-2.5 text-sm focus:outline-brand-600">
+                </div>
+            </div>
+            <div>
+                <label class="block text-xs font-semibold uppercase text-brand-700 mb-1">Your Message / Query</label>
+                <textarea id="inquiry-message" rows="3" required placeholder="Type your question here..." class="w-full bg-brand-50 border border-brand-200 rounded-xl px-4 py-2.5 text-sm focus:outline-brand-600"></textarea>
+            </div>
+            <button type="submit" id="inquiry-submit-btn" class="w-full bg-brand-800 text-white py-3 rounded-xl font-medium hover:bg-brand-700 transition shadow-md">
+                Send Inquiry
+            </button>
+        </form>
+    </div>
+</section>
     </div>
 
     <!-- Script File Link -->
