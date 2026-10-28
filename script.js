@@ -72,7 +72,7 @@ function renderProducts(filter = 'all') {
                     <p class="text-brand-700 text-sm font-light mt-1 line-clamp-2">${product.description}</p>
                 </div>
                 <div class="flex items-center justify-between mt-6 pt-4 border-t border-brand-100">
-                    <span class="text-lg font-bold text-brand-900">$${Number(product.price).toFixed(2)}</span>
+                    <span class="text-lg font-bold text-brand-900">Rs. ${Number(product.price).toFixed(2)}</span>
                     ${isOutOfStock 
                         ? '<span class="text-xs font-semibold text-red-500 uppercase tracking-wider">Unavailable</span>' 
                         : `<button onclick="window.addToCart('${product.id}')" class="bg-brand-800 text-white px-4 py-2.5 rounded-xl text-sm font-medium hover:bg-brand-700 transition shadow-sm">+ Add</button>`
@@ -94,7 +94,7 @@ function renderAdminList() {
             <div class="flex items-center space-x-3">
                 <img src="${p.image}" class="w-10 h-10 object-cover rounded-lg">
                 <div>
-                    <p class="font-bold text-brand-900">${p.name} <span class="text-xs font-normal text-brand-600">($${p.price})</span></p>
+                    <p class="font-bold text-brand-900">${p.name} <span class="text-xs font-normal text-brand-600">(Rs. ${p.price})</span></p>
                     <p class="text-xs ${p.stock === 'out' ? 'text-red-500' : 'text-green-600'}">${p.stock === 'out' ? 'Out of Stock' : 'In Stock'}</p>
                 </div>
             </div>
@@ -211,7 +211,7 @@ function updateCartUI() {
     const cartItemsContainer = document.getElementById('cart-items');
     if (cart.length === 0) {
         cartItemsContainer.innerHTML = `<p class="text-center text-brand-600 py-8 font-light">Your bag is currently empty.</p>`;
-        document.getElementById('cart-subtotal').textContent = '$0.00';
+        document.getElementById('cart-subtotal').textContent = 'Rs. 0.00';
         return;
     }
 
@@ -224,11 +224,11 @@ function updateCartUI() {
                 <img src="${item.image}" class="w-16 h-16 object-cover rounded-xl">
                 <div class="flex-grow">
                     <h4 class="text-sm font-bold text-brand-900">${item.name}</h4>
-                    <p class="text-xs text-brand-600">$${Number(item.price).toFixed(2)} × ${item.quantity}</p>
+                    <p class="text-xs text-brand-600">Rs. ${Number(item.price).toFixed(2)} × ${item.quantity}</p>
                 </div>
             </div>`;
     });
-    document.getElementById('cart-subtotal').textContent = `$${subtotal.toFixed(2)}`;
+    document.getElementById('cart-subtotal').textContent = `Rs. ${subtotal.toFixed(2)}`;
 }
 
 // UI Toggles
