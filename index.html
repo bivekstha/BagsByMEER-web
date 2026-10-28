@@ -218,12 +218,12 @@
         </div>
     </section>
 
-    <!-- Quick Inquiry & Message Section (Connected to Web3Forms) -->
+    <!-- Quick Inquiry & Message Section -->
     <section id="inquiry" class="py-16 bg-brand-100/40 border-t border-brand-200">
         <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-8">
                 <span class="text-brand-600 font-semibold tracking-wider text-xs uppercase">Got Questions?</span>
-                <h2 class="font-serif text-3xl font-bold text-brand-900 mt-1">Ask Us Anything</h2>
+                <h2 class="font-serif text-3xl sm:text-b font-bold text-brand-900 mt-1">Ask Us Anything</h2>
                 <p class="text-brand-700 text-sm font-light mt-2">Select a common question below or send a message straight to our inbox.</p>
             </div>
 
@@ -241,8 +241,8 @@
             </div>
 
             <!-- Inquiry Form -->
-            <form action="https://api.web3forms.com/submit" method="POST" id="inquiry-form" class="bg-white p-6 sm:p-8 rounded-3xl border border-brand-200 shadow-sm space-y-4">
-                <!-- Web3Forms Access Key Configured -->
+            <form id="inquiry-form" class="bg-white p-6 sm:p-8 rounded-3xl border border-brand-200 shadow-sm space-y-4">
+                <!-- Web3Forms Access Key linked to bivekshrestha437@gmail.com -->
                 <input type="hidden" name="access_key" value="d11a18f8-5ce3-4fd2-97b3-e9c0da0855d0">
                 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -259,6 +259,10 @@
                     <label class="block text-xs font-semibold uppercase text-brand-700 mb-1">Your Message / Query</label>
                     <textarea name="message" id="inquiry-message" rows="3" required placeholder="Type your question here..." class="w-full bg-brand-50 border border-brand-200 rounded-xl px-4 py-2.5 text-sm focus:outline-brand-600"></textarea>
                 </div>
+
+                <!-- Live Status Feedback Banner -->
+                <div id="form-result" class="text-sm font-medium text-center hidden"></div>
+
                 <button type="submit" id="inquiry-submit-btn" class="w-full bg-brand-800 text-white py-3 rounded-xl font-medium hover:bg-brand-700 transition shadow-md">
                     Send Private Message
                 </button>
@@ -295,7 +299,7 @@
         </div>
     </footer>
 
-    <!-- SECURE ADMIN LOGIN MODAL -->
+    <!-- SECURE ADMIN LOGIN MODAL (Hint Hidden) -->
     <div id="admin-login-modal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden items-center justify-center p-4">
         <div class="bg-white rounded-3xl max-w-md w-full p-8 shadow-2xl relative">
             <div class="flex justify-between items-center pb-4 border-b border-brand-200 mb-6">
