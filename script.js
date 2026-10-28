@@ -231,25 +231,13 @@ function updateCartUI() {
     document.getElementById('cart-subtotal').textContent = `Rs. ${subtotal.toFixed(2)}`;
 }
 
-// UI Toggles
-adminToggleBtn.addEventListener('click', () => adminLoginModal.classList.remove('hidden'));
-closeLogin.addEventListener('click', () => adminLoginModal.classList.add('hidden'));
-closeAdmin.addEventListener('click', () => adminModal.classList.add('hidden'));
-document.getElementById('reset-form').addEventListener('click', () => {
-    productForm.reset();
-    document.getElementById('edit-product-id').value = '';
-    document.getElementById('form-title').textContent = 'Add New Item';
-});
-document.getElementById('cart-btn').addEventListener('click', () => document.getElementById('cart-drawer').classList.remove('hidden'));
-document.getElementById('close-cart').addEventListener('click', () => document.getElementById('cart-drawer').classList.add('hidden'));
-document.getElementById('mobile-menu-btn').addEventListener('click', () => document.getElementById('mobile-menu').classList.remove('hidden'));
-// Function to auto-fill the query text when a quick button is clicked
+// Quick Inquiry Pre-defined Query Filler
 window.setQuery = function(questionText) {
     document.getElementById('inquiry-message').value = questionText;
     document.getElementById('inquiry-message').focus();
 }
 
-// Handle Customer Inquiry Submission
+// Handle Customer Inquiry Submission to Firestore
 const inquiryForm = document.getElementById('inquiry-form');
 if (inquiryForm) {
     inquiryForm.addEventListener('submit', async (e) => {
@@ -263,7 +251,6 @@ if (inquiryForm) {
         submitBtn.disabled = true;
 
         try {
-            // Save the customer inquiry into a 'messages' collection in Firestore
             await addDoc(collection(db, "messages"), {
                 name,
                 contact,
@@ -283,6 +270,19 @@ if (inquiryForm) {
         }
     });
 }
+
+// UI Toggles
+adminToggleBtn.addEventListener('click', () => adminLoginModal.classList.remove('hidden'));
+closeLogin.addEventListener('click', () => adminLoginModal.classList.add('hidden'));
+closeAdmin.addEventListener('click', () => adminModal.classList.add('hidden'));
+document.getElementById('reset-form').addEventListener('click', () => {
+    productForm.reset();
+    document.getElementById('edit-product-id').value = '';
+    document.getElementById('form-title').textContent = 'Add New Item';
+});
+document.getElementById('cart-btn').addEventListener('click', () => document.getElementById('cart-drawer').classList.remove('hidden'));
+document.getElementById('close-cart').addEventListener('click', () => document.getElementById('cart-drawer').classList.add('hidden'));
+document.getElementById('mobile-menu-btn').addEventListener('click', () => document.getElementById('mobile-menu').classList.remove('hidden'));
 document.getElementById('close-mobile-menu').addEventListener('click', () => document.getElementById('mobile-menu').classList.add('hidden'));
 
 // Initial Load
