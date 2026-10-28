@@ -1,175 +1,101 @@
-// --- FIREBASE CONFIGURATION (Replace with your Firebase project keys) ---
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getFirestore, collection, getDocs, addDoc, updateDoc, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
+// Product Data for BagsByMeer
+const products = [
+    {
+        id: 1,
+        name: "The Heirloom Canvas Tote",
+        category: "tote",
+        price: 85.00,
+        image: "https://images.unsplash.com/photo-1544816155-12df9643f363?auto=format&fit=crop&q=80&w=800",
+        description: "Spacious, sturdy, and effortlessly elegant. Hand-sewn from heavy-duty organic canvas with reinforced vegetable-tanned leather straps."
+    },
+    {
+        id: 2,
+        name: "Chestnut Leather Crossbody",
+        category: "crossbody",
+        price: 120.00,
+        image: "https://images.unsplash.com/photo-1590874103328-eac38a683ce7?auto=format&fit=crop&q=80&w=800",
+        description: "Compact yet surprisingly roomy. Crafted with rich chestnut-toned fabric and brass hardware for your everyday adventures."
+    },
+    {
+        id: 3,
+        name: "Artisan Quilted Backpack",
+        category: "backpack",
+        price: 145.00,
+        image: "https://images.unsplash.com/photo-1584917865442-de89df76afd3?auto=format&fit=crop&q=80&w=800",
+        description: "Features custom hand-quilted stitching, secure drawstring closure, and comfortable padded shoulder straps."
+    },
+    {
+        id: 4,
+        name: "Minimalist Linen Market Bag",
+        category: "tote",
+        price: 65.00,
+        image: "https://images.unsplash.com/photo-1598532163257-ae3c6c2524b6?auto=format&fit=crop&q=80&w=800",
+        description: "Lightweight, breathable, and foldable. Perfect for farmers markets, bookstore trips, or sunny beach days."
+    },
+    {
+        id: 5,
+        name: "Midnight Velvet Evening Pouch",
+        category: "crossbody",
+        price: 75.00,
+        image: "https://images.unsplash.com/photo-1566150905458-1bf1fc113f0d?auto=format&fit=crop&q=80&w=800",
+        description: "Luxurious deep midnight velvet with a delicate chain strap. Designed for weddings, dinners, and evening elegance."
+    },
+    {
+        id: 6,
+        name: "Urban Corduroy Daypack",
+        category: "backpack",
+        price: 130.00,
+        image: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&q=80&w=800",
+        description: "Textured vintage corduroy meets modern compartmentalization. Built for students and daily commuters alike."
+    }
+];
 
-const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-    projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_PROJECT_ID.appspot.com",
-    messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-    appId: "YOUR_APP_ID"
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-const storage = getStorage(app);
-
-let products = [];
 let cart = [];
 let activeFilter = 'all';
 
 // DOM Elements
 const productGrid = document.getElementById('product-grid');
-const adminModal = document.getElementById('admin-modal');
-const adminToggleBtn = document.getElementById('admin-toggle-btn');
-const closeAdmin = document.getElementById('close-admin');
-const productForm = document.getElementById('product-form');
-const adminProductList = document.getElementById('admin-product-list');
+const cartDrawer = document.getElementById('cart-drawer');
+const cartBtn = document.getElementById('cart-btn');
+const closeCart = document.getElementById('close-cart');
+const cartBadge = document.getElementById('cart-badge');
+const cartCountHeader = document.getElementById('cart-count-header');
+const cartItemsContainer = document.getElementById('cart-items');
+const cartSubtotal = document.getElementById('cart-subtotal');
+const mobileMenu = document.getElementById('mobile-menu');
+const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+const closeMobileMenu = document.getElementById('close-mobile-menu');
+const productModal = document.getElementById('product-modal');
+const closeModal = document.getElementById('close-modal');
 
-// Load Products from Firestore Database on Startup
-async function loadProducts() {
-    try {
-        const querySnapshot = await getDocs(collection(db, "bags"));
-        products = [];
-        querySnapshot.forEach((docSnap) => {
-            products.push({ id: docSnap.id, ...docSnap.data() });
-        });
-        renderProducts(activeFilter);
-        renderAdminList();
-    } catch (error) {
-        console.error("Error loading products:", error);
-        productGrid.innerHTML = `<div class="col-span-full text-center py-8 text-red-600">Failed to load database. Check your Firebase credentials in script.js</div>`;
-    }
-}
-
-// Render Catalog Grid
+// Render Products
 function renderProducts(filter = 'all') {
     productGrid.innerHTML = '';
     const filtered = filter === 'all' ? products : products.filter(p => p.category === filter);
-    
-    if (filtered.length === 0) {
-        productGrid.innerHTML = `<div class="col-span-full text-center py-12 text-brand-600 font-light">No bags found in this category. Use the Admin panel to add some!</div>`;
-        return;
-    }
 
     filtered.forEach(product => {
-        const isOutOfStock = product.stock === 'out';
         const card = document.createElement('div');
-        card.className = 'group bg-white rounded-3xl overflow-hidden border border-brand-200/60 shadow-sm hover:shadow-xl transition duration-300 flex flex-col justify-between relative';
+        card.className = 'group bg-white rounded-3xl overflow-hidden border border-brand-200/60 shadow-sm hover:shadow-xl transition duration-300 flex flex-col justify-between cursor-pointer';
         card.innerHTML = `
-            <div class="relative overflow-hidden aspect-[4/3] bg-brand-100">
-                <img src="${product.image}" alt="${product.name}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500 ${isOutOfStock ? 'opacity-50 grayscale' : ''}">
+            <div class="relative overflow-hidden aspect-[4/3] bg-brand-100" onclick="openProductModal(${product.id})">
+                <img src="${product.image}" alt="${product.name}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
                 <span class="absolute top-4 left-4 bg-white/90 backdrop-blur-md text-brand-900 text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider">${product.category}</span>
-                ${isOutOfStock ? '<span class="absolute top-4 right-4 bg-red-600 text-white text-xs font-bold px-3 py-1 rounded-full uppercase">Out of Stock</span>' : ''}
             </div>
             <div class="p-6 flex flex-col flex-grow justify-between">
-                <div>
-                    <h3 class="font-serif text-xl font-bold text-brand-900">${product.name}</h3>
+                <div onclick="openProductModal(${product.id})">
+                    <h3 class="font-serif text-xl font-bold text-brand-900 group-hover:text-brand-600 transition">${product.name}</h3>
                     <p class="text-brand-700 text-sm font-light mt-1 line-clamp-2">${product.description}</p>
                 </div>
                 <div class="flex items-center justify-between mt-6 pt-4 border-t border-brand-100">
-                    <span class="text-lg font-bold text-brand-900">$${Number(product.price).toFixed(2)}</span>
-                    ${isOutOfStock 
-                        ? '<span class="text-xs font-semibold text-red-500 uppercase tracking-wider">Unavailable</span>' 
-                        : `<button onclick="window.addToCart('${product.id}')" class="bg-brand-800 text-white px-4 py-2.5 rounded-xl text-sm font-medium hover:bg-brand-700 transition shadow-sm">+ Add</button>`
-                    }
+                    <span class="text-lg font-bold text-brand-900">$${product.price.toFixed(2)}</span>
+                    <button onclick="addToCart(${product.id})" class="bg-brand-800 text-white px-4 py-2.5 rounded-xl text-sm font-medium hover:bg-brand-700 transition shadow-sm">
+                        + Add
+                    </button>
                 </div>
             </div>
         `;
         productGrid.appendChild(card);
     });
-}
-
-// Render Admin List (for editing/deleting items)
-function renderAdminList() {
-    adminProductList.innerHTML = '';
-    products.forEach(p => {
-        const item = document.createElement('div');
-        item.className = 'flex items-center justify-between bg-white p-3 rounded-xl border border-brand-200 text-sm';
-        item.innerHTML = `
-            <div class="flex items-center space-x-3">
-                <img src="${p.image}" class="w-10 h-10 object-cover rounded-lg">
-                <div>
-                    <p class="font-bold text-brand-900">${p.name} <span class="text-xs font-normal text-brand-600">($${p.price})</span></p>
-                    <p class="text-xs ${p.stock === 'out' ? 'text-red-500' : 'text-green-600'}">${p.stock === 'out' ? 'Out of Stock' : 'In Stock'}</p>
-                </div>
-            </div>
-            <div class="space-x-2">
-                <button onclick="window.editProduct('${p.id}')" class="px-3 py-1 bg-brand-200 text-brand-900 rounded-lg text-xs font-medium">Edit</button>
-                <button onclick="window.deleteProduct('${p.id}')" class="px-3 py-1 bg-red-100 text-red-700 rounded-lg text-xs font-medium">Delete</button>
-            </div>
-        `;
-        adminProductList.appendChild(item);
-    });
-}
-
-// Handle Form Submit (Add or Update Item)
-productForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const editId = document.getElementById('edit-product-id').value;
-    const name = document.getElementById('p-name').value;
-    const category = document.getElementById('p-category').value;
-    const price = parseFloat(document.getElementById('p-price').value);
-    const stock = document.getElementById('p-stock').value;
-    const description = document.getElementById('p-desc').value;
-    let image = document.getElementById('p-image').value;
-    const fileInput = document.getElementById('p-file');
-
-    const saveBtn = document.getElementById('save-product-btn');
-    saveBtn.textContent = 'Saving to Cloud...';
-    saveBtn.disabled = true;
-
-    try {
-        if (fileInput.files.length > 0) {
-            const file = fileInput.files[0];
-            const storageRef = ref(storage, `bags/${Date.now()}_${file.name}`);
-            const snapshot = await uploadBytes(storageRef, file);
-            image = await getDownloadURL(snapshot.ref);
-        }
-
-        const productData = { name, category, price, stock, description, image: image || 'logo.jpg' };
-
-        if (editId) {
-            await updateDoc(doc(db, "bags", editId), productData);
-        } else {
-            await addDoc(collection(db, "bags"), productData);
-        }
-
-        productForm.reset();
-        document.getElementById('edit-product-id').value = '';
-        document.getElementById('form-title').textContent = 'Add New Item';
-        saveBtn.textContent = 'Save Item to Database';
-        saveBtn.disabled = false;
-
-        loadProducts();
-    } catch (error) {
-        console.error("Error saving product:", error);
-        alert("Failed to save product.");
-        saveBtn.textContent = 'Save Item to Database';
-        saveBtn.disabled = false;
-    }
-});
-
-// Edit Product Helper
-window.editProduct = function(id) {
-    const p = products.find(item => item.id === id);
-    document.getElementById('edit-product-id').value = p.id;
-    document.getElementById('p-name').value = p.name;
-    document.getElementById('p-category').value = p.category;
-    document.getElementById('p-price').value = p.price;
-    document.getElementById('p-stock').value = p.stock || 'in';
-    document.getElementById('p-image').value = p.image;
-    document.getElementById('p-desc').value = p.description;
-    document.getElementById('form-title').textContent = `Edit: ${p.name}`;
-}
-
-// Delete Product Helper
-window.deleteProduct = function(id) {
-    if (confirm("Are you sure you want to delete this bag from the database?")) {
-        deleteDoc(doc(db, "bags", id)).then(() => loadProducts());
-    }
 }
 
 // Filter buttons
@@ -181,61 +107,94 @@ document.querySelectorAll('.filter-btn').forEach(btn => {
         });
         e.target.classList.remove('bg-brand-200/60', 'text-brand-800');
         e.target.classList.add('bg-brand-800', 'text-brand-50');
-        activeFilter = e.target.getAttribute('data-filter');
-        renderProducts(activeFilter);
+        renderProducts(e.target.getAttribute('data-filter'));
     });
 });
 
 // Cart Management
-window.addToCart = function(productId) {
+function addToCart(productId) {
     const product = products.find(p => p.id === productId);
     const existing = cart.find(item => item.id === productId);
-    if (existing) existing.quantity += 1;
-    else cart.push({ ...product, quantity: 1 });
+    if (existing) {
+        existing.quantity += 1;
+    } else {
+        cart.push({ ...product, quantity: 1 });
+    }
     updateCartUI();
-    document.getElementById('cart-drawer').classList.remove('hidden');
+    cartDrawer.classList.remove('hidden');
+}
+
+function removeFromCart(productId) {
+    cart = cart.filter(item => item.id !== productId);
+    updateCartUI();
 }
 
 function updateCartUI() {
     const totalCount = cart.reduce((sum, item) => sum + item.quantity, 0);
-    document.getElementById('cart-badge').textContent = totalCount;
-    document.getElementById('cart-count-header').textContent = totalCount;
+    cartBadge.textContent = totalCount;
+    cartCountHeader.textContent = totalCount;
 
-    const cartItemsContainer = document.getElementById('cart-items');
     if (cart.length === 0) {
         cartItemsContainer.innerHTML = `<p class="text-center text-brand-600 py-8 font-light">Your bag is currently empty.</p>`;
-        document.getElementById('cart-subtotal').textContent = '$0.00';
+        cartSubtotal.textContent = '$0.00';
         return;
     }
 
     cartItemsContainer.innerHTML = '';
     let subtotal = 0;
+
     cart.forEach(item => {
         subtotal += item.price * item.quantity;
-        cartItemsContainer.innerHTML += `
-            <div class="flex items-center space-x-4 bg-brand-100/50 p-3 rounded-2xl">
-                <img src="${item.image}" class="w-16 h-16 object-cover rounded-xl">
-                <div class="flex-grow">
-                    <h4 class="text-sm font-bold text-brand-900">${item.name}</h4>
-                    <p class="text-xs text-brand-600">$${Number(item.price).toFixed(2)} × ${item.quantity}</p>
-                </div>
-            </div>`;
+        const itemEl = document.createElement('div');
+        itemEl.className = 'flex items-center space-x-4 bg-brand-100/50 p-3 rounded-2xl';
+        itemEl.innerHTML = `
+            <img src="${item.image}" alt="${item.name}" class="w-16 h-16 object-cover rounded-xl">
+            <div class="flex-grow">
+                <h4 class="text-sm font-bold text-brand-900">${item.name}</h4>
+                <p class="text-xs text-brand-600">$${item.price.toFixed(2)} × ${item.quantity}</p>
+            </div>
+            <button onclick="removeFromCart(${item.id})" class="text-brand-800 hover:text-red-600 p-2"><i class="fa-solid fa-trash-can text-sm"></i></button>
+        `;
+        cartItemsContainer.appendChild(itemEl);
     });
-    document.getElementById('cart-subtotal').textContent = `$${subtotal.toFixed(2)}`;
+
+    cartSubtotal.textContent = `$${subtotal.toFixed(2)}`;
 }
 
-// UI Toggles
-adminToggleBtn.addEventListener('click', () => adminModal.classList.remove('hidden'));
-closeAdmin.addEventListener('click', () => adminModal.classList.add('hidden'));
-document.getElementById('reset-form').addEventListener('click', () => {
-    productForm.reset();
-    document.getElementById('edit-product-id').value = '';
-    document.getElementById('form-title').textContent = 'Add New Item';
-});
-document.getElementById('cart-btn').addEventListener('click', () => document.getElementById('cart-drawer').classList.remove('hidden'));
-document.getElementById('close-cart').addEventListener('click', () => document.getElementById('cart-drawer').classList.add('hidden'));
-document.getElementById('mobile-menu-btn').addEventListener('click', () => document.getElementById('mobile-menu').classList.remove('hidden'));
-document.getElementById('close-mobile-menu').addEventListener('click', () => document.getElementById('mobile-menu').classList.add('hidden'));
+// Modal View
+function openProductModal(productId) {
+    const product = products.find(p => p.id === productId);
+    document.getElementById('modal-img').src = product.image;
+    document.getElementById('modal-category').textContent = product.category;
+    document.getElementById('modal-title').textContent = product.name;
+    document.getElementById('modal-price').textContent = `$${product.price.toFixed(2)}`;
+    document.getElementById('modal-desc').textContent = product.description;
 
-// Initial Load
-loadProducts();
+    document.getElementById('modal-add-btn').onclick = () => {
+        addToCart(product.id);
+        productModal.classList.add('hidden');
+        productModal.classList.remove('flex');
+    };
+
+    productModal.classList.remove('hidden');
+    productModal.classList.add('flex');
+}
+
+closeModal.addEventListener('click', () => {
+    productModal.classList.add('hidden');
+    productModal.classList.remove('flex');
+});
+
+// Cart Drawer Toggles
+cartBtn.addEventListener('click', () => cartDrawer.classList.remove('hidden'));
+closeCart.addEventListener('click', () => cartDrawer.classList.add('hidden'));
+
+// Mobile Menu Toggles
+mobileMenuBtn.addEventListener('click', () => mobileMenu.classList.remove('hidden'));
+closeMobileMenu.addEventListener('click', () => mobileMenu.classList.add('hidden'));
+document.querySelectorAll('.mobile-link').forEach(link => {
+    link.addEventListener('click', () => mobileMenu.classList.add('hidden'));
+});
+
+// Initialize catalog on load
+renderProducts();
