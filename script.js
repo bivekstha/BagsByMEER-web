@@ -4,12 +4,13 @@ import { getFirestore, collection, getDocs, addDoc, updateDoc, deleteDoc, doc } 
 import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
 
 const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-    projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_PROJECT_ID.appspot.com",
-    messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-    appId: "YOUR_APP_ID"
+    apiKey: "AIzaSyAU1Ahk2asBAEGZ-rjqfQ08iwA6i8XVUKa",
+    authDomain: "bagsbymeer.firebaseapp.com",
+    projectId: "bagsbymeer",
+    storageBucket: "bagsbymeer.firebasestorage.app",
+    messagingSenderId: "778662905536",
+    appId: "1:778662905536:web:6a2840524c033c0d8a4f25",
+    measurementId: "G-9Q7NREN303"
 };
 
 const app = initializeApp(firebaseConfig);
