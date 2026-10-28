@@ -231,28 +231,60 @@ function updateCartUI() {
     document.getElementById('cart-subtotal').textContent = `Rs. ${subtotal.toFixed(2)}`;
 }
 
-// Quick Inquiry Pre-defined Query Filler
+// Quick Inquiry Pre-defined Query Filler Helper
 window.setQuery = function(questionText) {
     document.getElementById('inquiry-message').value = questionText;
     document.getElementById('inquiry-message').focus();
 }
 
-// Handle Customer Inquiry Submission via Email Client
+// Handle Web3Forms Ajax Submission with Success / Error Feedback States
 const inquiryForm = document.getElementById('inquiry-form');
 if (inquiryForm) {
-    inquiryForm.addEventListener('submit', (e) => {
+    inquiryForm.addEventListener('submit', async function(e) {
         e.preventDefault();
-        const name = document.getElementById('inquiry-name').value;
-        const contact = document.getElementById('inquiry-contact').value;
-        const message = document.getElementById('inquiry-message').value;
+        
+        const submitBtn = document.getElementById('inquiry-submit-btn');
+        const formResult = document.getElementById('form-result');
+        
+        submitBtn.textContent = 'Sending Message...';
+        submitBtn.disabled = true;
+        formResult.classList.add('hidden');
 
-        // Replace with your personal email address
-        const myEmail = "bagsbymeer@gmail.com"; 
+        const formData = new FormData(inquiryForm);
+        const object = Object.fromEntries(formData);
+        const json = JSON.stringify(object);
 
-        const subject = encodeURIComponent(`New Inquiry from ${name} - BagsByMeer`);
-        const body = encodeURIComponent(`Name: ${name}\nContact: ${contact}\n\nMessage:\n${message}`);
-
-        window.location.href = `mailto:${myEmail}?subject=${subject}&body=${body}`;
+        try {
+            const response = await fetch('https://api.web3forms.com/submit', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: json
+            });
+            
+            const result = await response.json();
+            
+            if (response.status === 200) {
+                formResult.textContent = "✅ Success! Your private message has been sent to BagsByMeer.";
+                formResult.className = "text-sm font-medium text-center text-green-700 bg-green-50 p-3 rounded-xl border border-green-200";
+                formResult.classList.remove('hidden');
+                inquiryForm.reset();
+            } else {
+                formResult.textContent = `❌ Error: ${result.message || "Something went wrong. Please try again."}`;
+                formResult.className = "text-sm font-medium text-center text-red-700 bg-red-50 p-3 rounded-xl border border-red-200";
+                formResult.classList.remove('hidden');
+            }
+        } catch (error) {
+            console.error(error);
+            formResult.textContent = "❌ Network error. Please check your connection and try again.";
+            formResult.className = "text-sm font-medium text-center text-red-700 bg-red-50 p-3 rounded-xl border border-red-200";
+            formResult.classList.remove('hidden');
+        } finally {
+            submitBtn.textContent = 'Send Private Message';
+            submitBtn.disabled = false;
+        }
     });
 }
 
