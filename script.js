@@ -46,7 +46,7 @@ async function loadProducts() {
     }
 }
 
-// Render Catalog Grid with Multiple Animated Images Support
+// Render Catalog Grid with Interactive Multi-Image Gallery Support
 function renderProducts(filter = 'all') {
     productGrid.innerHTML = '';
     const filtered = filter === 'all' ? products : products.filter(p => p.category === filter);
@@ -59,19 +59,40 @@ function renderProducts(filter = 'all') {
     filtered.forEach(product => {
         const isOutOfStock = product.stock === 'out';
         
-        // Parse comma-separated images or fallback to default
-        const imageUrls = product.image ? product.image.split(',').map(url => url.trim()) : ['logo.jpg'];
-        
+        // Split comma-separated image URLs safely, filtering out empty entries
+        let imageUrls = product.image ? product.image.split(',').map(url => url.trim()).filter(url => url.length > 0) : ['logo.jpg'];
+        if (imageUrls.length === 0) imageUrls = ['logo.jpg'];
+
         let imageHtml = '';
         if (imageUrls.length > 1) {
+            // Unique ID for this card's gallery switcher
+            const galleryId = `gallery-${product.id}`;
+            
+            // Build clickable thumbnail dots or indicators
+            let indicatorsHtml = '';
+            imageUrls.forEach((url, idx) => {
+                indicatorsHtml += `<button onclick="window.switchImage('${galleryId}', ${idx})" class="gallery-dot-${galleryId} w-2.5 h-2.5 rounded-full transition-all ${idx === 0 ? 'bg-white scale-125 shadow-md' : 'bg-white/50 hover:bg-white/80'}"></button>`;
+            });
+
             imageHtml = `
-                <div class="relative overflow-hidden aspect-[4/3] bg-brand-100">
-                    <img src="${imageUrls[0]}" alt="${product.name}" class="product-slider-img w-full h-full object-cover transition-opacity duration-700 ${isOutOfStock ? 'opacity-50 grayscale' : ''}" data-images='${JSON.stringify(imageUrls)}' data-index="0">
-                    <span class="absolute bottom-3 right-3 bg-black/60 text-white text-[10px] font-medium px-2.5 py-1 rounded-full backdrop-blur-sm">
-                        <i class="fa-solid fa-images mr-1"></i> ${imageUrls.length} photos
-                    </span>
+                <div class="relative overflow-hidden aspect-[4/3] bg-brand-100 group/gallery">
+                    <img id="${galleryId}-img" src="${imageUrls[0]}" alt="${product.name}" class="w-full h-full object-cover group-hover:scale-105 transition-all duration-500 ${isOutOfStock ? 'opacity-50 grayscale' : ''}" data-urls='${JSON.stringify(imageUrls)}' data-current="0">
+                    
                     <span class="absolute top-4 left-4 bg-white/90 backdrop-blur-md text-brand-900 text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider">${product.category}</span>
                     ${isOutOfStock ? '<span class="absolute top-4 right-4 bg-red-600 text-white text-xs font-bold px-3 py-1 rounded-full uppercase">Out of Stock</span>' : ''}
+                    
+                    <!-- Gallery Navigation Buttons & Dots Overlay -->
+                    <div class="absolute bottom-3 inset-x-0 flex items-center justify-between px-4 opacity-90 transition-opacity">
+                        <button onclick="window.prevImage('${galleryId}')" class="bg-black/40 hover:bg-black/70 text-white w-7 h-7 rounded-full flex items-center justify-center backdrop-blur-sm text-xs transition">
+                            <i class="fa-solid fa-chevron-left"></i>
+                        </button>
+                        <div class="flex space-x-1.5 bg-black/30 backdrop-blur-sm px-2.5 py-1 rounded-full">
+                            ${indicatorsHtml}
+                        </div>
+                        <button onclick="window.nextImage('${galleryId}')" class="bg-black/40 hover:bg-black/70 text-white w-7 h-7 rounded-full flex items-center justify-center backdrop-blur-sm text-xs transition">
+                            <i class="fa-solid fa-chevron-right"></i>
+                        </button>
+                    </div>
                 </div>
             `;
         } else {
@@ -106,28 +127,48 @@ function renderProducts(filter = 'all') {
     });
 }
 
-// Automatic Image Slideshow Animation Loop
-setInterval(() => {
-    document.querySelectorAll('.product-slider-img').forEach(img => {
-        try {
-            const images = JSON.parse(img.getAttribute('data-images'));
-            if (images && images.length > 1) {
-                let currentIndex = parseInt(img.getAttribute('data-index'));
-                currentIndex = (currentIndex + 1) % images.length;
-                img.setAttribute('data-index', currentIndex);
-                
-                // Smooth crossfade transition effect
-                img.style.opacity = '0.3';
-                setTimeout(() => {
-                    img.src = images[currentIndex];
-                    img.style.opacity = '1';
-                }, 300);
+// Interactive Gallery Controller Functions
+window.switchImage = function(galleryId, index) {
+    const imgElement = document.getElementById(`${galleryId}-img`);
+    if (!imgElement) return;
+    const urls = JSON.parse(imgElement.getAttribute('data-urls'));
+    if (urls && urls[index]) {
+        imgElement.setAttribute('data-current', index);
+        imgElement.style.opacity = '0.3';
+        setTimeout(() => {
+            imgElement.src = urls[index];
+            imgElement.style.opacity = '1';
+        }, 150);
+
+        // Update active states for indicator dots
+        const dots = document.querySelectorAll(`.gallery-dot-${galleryId}`);
+        dots.forEach((dot, idx) => {
+            if (idx === index) {
+                dot.className = `gallery-dot-${galleryId} w-2.5 h-2.5 rounded-full transition-all bg-white scale-125 shadow-md`;
+            } else {
+                dot.className = `gallery-dot-${galleryId} w-2.5 h-2.5 rounded-full transition-all bg-white/50 hover:bg-white/80`;
             }
-        } catch (e) {
-            // Fallback if attribute parsing fails
-        }
-    });
-}, 3500); // Cycles product images every 3.5 seconds
+        });
+    }
+}
+
+window.nextImage = function(galleryId) {
+    const imgElement = document.getElementById(`${galleryId}-img`);
+    if (!imgElement) return;
+    const urls = JSON.parse(imgElement.getAttribute('data-urls'));
+    let current = parseInt(imgElement.getAttribute('data-current')) || 0;
+    current = (current + 1) % urls.length;
+    window.switchImage(galleryId, current);
+}
+
+window.prevImage = function(galleryId) {
+    const imgElement = document.getElementById(`${galleryId}-img`);
+    if (!imgElement) return;
+    const urls = JSON.parse(imgElement.getAttribute('data-urls'));
+    let current = parseInt(imgElement.getAttribute('data-current')) || 0;
+    current = (current - 1 + urls.length) % urls.length;
+    window.switchImage(galleryId, current);
+}
 
 // Render Admin List
 function renderAdminList() {
