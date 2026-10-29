@@ -62,15 +62,12 @@
     <!-- Navigation -->
     <header class="sticky top-0 z-40 bg-brand-50/90 backdrop-blur-md border-b border-brand-200 transition-all">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-            <button id="mobile-menu-btn" class="md:hidden text-brand-800 text-xl focus:outline-none">
+            <button id="mobile-menu-btn" class="text-brand-800 text-xl focus:outline-none p-2">
                 <i class="fa-solid fa-bars"></i>
             </button>
 
-            <!-- Logo with Hover Effect -->
+            <!-- Logo (Small image removed, clean text branding) -->
             <a href="#home" class="flex items-center space-x-3 group">
-                <div class="relative w-11 h-11 rounded-full overflow-hidden border-2 border-brand-600 shadow-md group-hover:scale-110 group-hover:rotate-6 transition duration-300">
-                    <img src="logo.jpg" alt="BagsByMeer Logo" class="w-full h-full object-cover">
-                </div>
                 <span class="font-serif text-2xl sm:text-3xl font-bold tracking-tight text-brand-800 group-hover:text-brand-600 transition">
                     Bags<span class="italic font-normal text-brand-600">By</span>Meer
                 </span>
@@ -84,9 +81,6 @@
             </nav>
 
             <div class="flex items-center space-x-4">
-                <button id="admin-toggle-btn" class="text-xs bg-brand-200/70 hover:bg-brand-200 text-brand-800 px-3 py-1.5 rounded-lg font-medium transition flex items-center gap-1.5 shadow-sm" title="Open Database Admin">
-                    <i class="fa-solid fa-lock text-[10px]"></i> Admin Login
-                </button>
                 <button id="cart-btn" class="relative text-brand-800 hover:text-brand-600 transition focus:outline-none p-2">
                     <i class="fa-solid fa-bag-shopping text-xl"></i>
                     <span id="cart-badge" class="absolute top-0 right-0 bg-brand-700 text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center shadow-sm">0</span>
@@ -95,7 +89,7 @@
         </div>
     </header>
 
-    <!-- Mobile Navigation Drawer -->
+    <!-- Navigation Drawer (Includes Admin Login for both Mobile & PC Menu) -->
     <div id="mobile-menu" class="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm hidden">
         <div class="bg-brand-50 w-3/4 max-w-xs h-full shadow-2xl p-6 flex flex-col justify-between">
             <div>
@@ -103,12 +97,19 @@
                     <span class="font-serif text-xl font-bold text-brand-800">BagsByMeer</span>
                     <button id="close-mobile-menu" class="text-brand-800 text-lg"><i class="fa-solid fa-xmark"></i></button>
                 </div>
-                <nav class="flex flex-col space-y-4 text-base font-medium">
-                    <a href="#home" class="mobile-link text-brand-800 hover:text-brand-600">Home</a>
-                    <a href="#shop" class="mobile-link text-brand-800 hover:text-brand-600">Collection</a>
-                    <a href="#story" class="mobile-link text-brand-800 hover:text-brand-600">Our Story</a>
-                    <a href="#contact" class="mobile-link text-brand-800 hover:text-brand-600">Contact Us</a>
+                <nav class="flex flex-col space-y-5 text-base font-medium">
+                    <a href="#home" class="mobile-link text-brand-800 hover:text-brand-600 flex items-center gap-3"><i class="fa-solid fa-house w-5 text-brand-600"></i> Home</a>
+                    <a href="#shop" class="mobile-link text-brand-800 hover:text-brand-600 flex items-center gap-3"><i class="fa-solid fa-bag-shopping w-5 text-brand-600"></i> Collection</a>
+                    <a href="#story" class="mobile-link text-brand-800 hover:text-brand-600 flex items-center gap-3"><i class="fa-solid fa-heart w-5 text-brand-600"></i> Our Story</a>
+                    <a href="#contact" class="mobile-link text-brand-800 hover:text-brand-600 flex items-center gap-3"><i class="fa-solid fa-phone w-5 text-brand-600"></i> Contact Us</a>
+                    <hr class="border-brand-200 my-2">
+                    <button id="admin-toggle-btn" class="w-full text-left text-brand-800 hover:text-brand-600 flex items-center gap-3 py-2 font-medium">
+                        <i class="fa-solid fa-lock w-5 text-brand-600"></i> Admin Login
+                    </button>
                 </nav>
+            </div>
+            <div class="text-xs text-brand-600 text-center py-4 border-t border-brand-200">
+                Handcrafted in Nepal 🇳🇵
             </div>
         </div>
     </div>
@@ -210,7 +211,7 @@
         </div>
     </section>
 
-    <!-- Our Story Section -->
+    <!-- Our Story Section (Updated with Meera Shrestha's Story) -->
     <section id="story" class="py-20 bg-brand-100/60 border-y border-brand-200">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
@@ -222,8 +223,7 @@
                     <span class="text-brand-600 font-semibold tracking-wider text-xs uppercase">Behind The Seams</span>
                     <h2 class="font-serif text-3xl sm:text-4xl font-bold text-brand-900">Crafted with Passion in Nepal</h2>
                     <p class="text-brand-700 font-light leading-relaxed">
-                        Behind every stitch at BagsByMeer lies a mother’s labor of love. What began as a heartfelt hobby in Kathmandu, Nepal, has blossomed into an inspiring journey as Meera Shrestha dedicates herself to growing her craft, honing her talent, 
-                        and supporting her family through the beauty of handmade bags.
+                        Behind every stitch at BagsByMeer lies a mother’s labor of love. What began as a heartfelt hobby in Kathmandu, Nepal, has blossomed into an inspiring journey as Meera Shrestha dedicates herself to growing her craft, honing her talent, and supporting her family through the beauty of handmade bags.
                     </p>
                 </div>
             </div>
@@ -390,7 +390,7 @@
                 </div>
                 <div>
                     <label class="block text-xs font-semibold uppercase text-brand-700 mb-1">Image URLs (Comma separated for multiple animated images)</label>
-                    <input type="text" id="p-image" placeholder="https://img1.jpg, https://img2.jpg, https://img3.jpg" class="w-full bg-white border border-brand-200 rounded-xl px-4 py-2 text-sm focus:outline-brand-600 mb-2">
+                    <input type="text" id="p-image" placeholder="https://img1.jpg, https://img2.jpg" class="w-full bg-white border border-brand-200 rounded-xl px-4 py-2 text-sm focus:outline-brand-600 mb-2">
                 </div>
                 <div>
                     <label class="block text-xs font-semibold uppercase text-brand-700 mb-1">Description</label>
@@ -412,24 +412,4 @@
         <div class="bg-brand-50 w-full max-w-md h-full shadow-2xl flex flex-col justify-between p-6">
             <div>
                 <div class="flex items-center justify-between pb-4 border-b border-brand-200">
-                    <h3 class="font-serif text-xl font-bold text-brand-900">Your Shopping Bag (<span id="cart-count-header">0</span>)</h3>
-                    <button id="close-cart" class="text-brand-800 text-xl"><i class="fa-solid fa-xmark"></i></button>
-                </div>
-                <div id="cart-items" class="py-6 space-y-4 overflow-y-auto max-h-[50vh]"></div>
-            </div>
-            <div class="border-t border-brand-200 pt-4 space-y-4">
-                <div class="flex justify-between items-center text-lg font-bold text-brand-900">
-                    <span>Subtotal:</span>
-                    <span id="cart-subtotal">Rs. 0.00</span>
-                </div>
-                <button onclick="alert('Proceeding to checkout!');" class="w-full bg-brand-800 text-white py-3.5 rounded-xl font-medium hover:bg-brand-700 transition">
-                    Proceed to Checkout
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Script File Link -->
-    <script type="module" src="script.js"></script>
-</body>
-</html>
+                    <h3 class="font-serif text-xl font-bold text-brand
