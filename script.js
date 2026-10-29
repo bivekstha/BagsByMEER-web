@@ -46,7 +46,7 @@ async function loadProducts() {
     }
 }
 
-// Render Catalog Grid
+// Render Catalog Grid with Multiple Animated Images Support
 function renderProducts(filter = 'all') {
     productGrid.innerHTML = '';
     const filtered = filter === 'all' ? products : products.filter(p => p.category === filter);
@@ -58,14 +58,36 @@ function renderProducts(filter = 'all') {
 
     filtered.forEach(product => {
         const isOutOfStock = product.stock === 'out';
+        
+        // Parse comma-separated images or fallback to default
+        const imageUrls = product.image ? product.image.split(',').map(url => url.trim()) : ['logo.jpg'];
+        
+        let imageHtml = '';
+        if (imageUrls.length > 1) {
+            imageHtml = `
+                <div class="relative overflow-hidden aspect-[4/3] bg-brand-100">
+                    <img src="${imageUrls[0]}" alt="${product.name}" class="product-slider-img w-full h-full object-cover transition-opacity duration-700 ${isOutOfStock ? 'opacity-50 grayscale' : ''}" data-images='${JSON.stringify(imageUrls)}' data-index="0">
+                    <span class="absolute bottom-3 right-3 bg-black/60 text-white text-[10px] font-medium px-2.5 py-1 rounded-full backdrop-blur-sm">
+                        <i class="fa-solid fa-images mr-1"></i> ${imageUrls.length} photos
+                    </span>
+                    <span class="absolute top-4 left-4 bg-white/90 backdrop-blur-md text-brand-900 text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider">${product.category}</span>
+                    ${isOutOfStock ? '<span class="absolute top-4 right-4 bg-red-600 text-white text-xs font-bold px-3 py-1 rounded-full uppercase">Out of Stock</span>' : ''}
+                </div>
+            `;
+        } else {
+            imageHtml = `
+                <div class="relative overflow-hidden aspect-[4/3] bg-brand-100">
+                    <img src="${imageUrls[0]}" alt="${product.name}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500 ${isOutOfStock ? 'opacity-50 grayscale' : ''}">
+                    <span class="absolute top-4 left-4 bg-white/90 backdrop-blur-md text-brand-900 text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider">${product.category}</span>
+                    ${isOutOfStock ? '<span class="absolute top-4 right-4 bg-red-600 text-white text-xs font-bold px-3 py-1 rounded-full uppercase">Out of Stock</span>' : ''}
+                </div>
+            `;
+        }
+
         const card = document.createElement('div');
         card.className = 'group bg-white rounded-3xl overflow-hidden border border-brand-200/60 shadow-sm hover:shadow-xl transition duration-300 flex flex-col justify-between relative';
         card.innerHTML = `
-            <div class="relative overflow-hidden aspect-[4/3] bg-brand-100">
-                <img src="${product.image}" alt="${product.name}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500 ${isOutOfStock ? 'opacity-50 grayscale' : ''}">
-                <span class="absolute top-4 left-4 bg-white/90 backdrop-blur-md text-brand-900 text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider">${product.category}</span>
-                ${isOutOfStock ? '<span class="absolute top-4 right-4 bg-red-600 text-white text-xs font-bold px-3 py-1 rounded-full uppercase">Out of Stock</span>' : ''}
-            </div>
+            ${imageHtml}
             <div class="p-6 flex flex-col flex-grow justify-between">
                 <div>
                     <h3 class="font-serif text-xl font-bold text-brand-900">${product.name}</h3>
@@ -84,15 +106,39 @@ function renderProducts(filter = 'all') {
     });
 }
 
+// Automatic Image Slideshow Animation Loop
+setInterval(() => {
+    document.querySelectorAll('.product-slider-img').forEach(img => {
+        try {
+            const images = JSON.parse(img.getAttribute('data-images'));
+            if (images && images.length > 1) {
+                let currentIndex = parseInt(img.getAttribute('data-index'));
+                currentIndex = (currentIndex + 1) % images.length;
+                img.setAttribute('data-index', currentIndex);
+                
+                // Smooth crossfade transition effect
+                img.style.opacity = '0.3';
+                setTimeout(() => {
+                    img.src = images[currentIndex];
+                    img.style.opacity = '1';
+                }, 300);
+            }
+        } catch (e) {
+            // Fallback if attribute parsing fails
+        }
+    });
+}, 3500); // Cycles product images every 3.5 seconds
+
 // Render Admin List
 function renderAdminList() {
     adminProductList.innerHTML = '';
     products.forEach(p => {
+        const firstImg = p.image ? p.image.split(',')[0].trim() : 'logo.jpg';
         const item = document.createElement('div');
         item.className = 'flex items-center justify-between bg-white p-3 rounded-xl border border-brand-200 text-sm';
         item.innerHTML = `
             <div class="flex items-center space-x-3">
-                <img src="${p.image}" class="w-10 h-10 object-cover rounded-lg">
+                <img src="${firstImg}" class="w-10 h-10 object-cover rounded-lg">
                 <div>
                     <p class="font-bold text-brand-900">${p.name} <span class="text-xs font-normal text-brand-600">(Rs. ${p.price})</span></p>
                     <p class="text-xs ${p.stock === 'out' ? 'text-red-500' : 'text-green-600'}">${p.stock === 'out' ? 'Out of Stock' : 'In Stock'}</p>
@@ -129,7 +175,7 @@ productForm.addEventListener('submit', async (e) => {
     const price = parseFloat(document.getElementById('p-price').value);
     const stock = document.getElementById('p-stock').value;
     const description = document.getElementById('p-desc').value;
-    let image = document.getElementById('p-image').value || 'logo.jpg';
+    let image = document.getElementById('p-image').value.trim() || 'logo.jpg';
 
     const saveBtn = document.getElementById('save-product-btn');
     saveBtn.textContent = 'Saving to Database...';
@@ -219,9 +265,10 @@ function updateCartUI() {
     let subtotal = 0;
     cart.forEach(item => {
         subtotal += item.price * item.quantity;
+        const firstImg = item.image ? item.image.split(',')[0].trim() : 'logo.jpg';
         cartItemsContainer.innerHTML += `
             <div class="flex items-center space-x-4 bg-brand-100/50 p-3 rounded-2xl">
-                <img src="${item.image}" class="w-16 h-16 object-cover rounded-xl">
+                <img src="${firstImg}" class="w-16 h-16 object-cover rounded-xl">
                 <div class="flex-grow">
                     <h4 class="text-sm font-bold text-brand-900">${item.name}</h4>
                     <p class="text-xs text-brand-600">Rs. ${Number(item.price).toFixed(2)} × ${item.quantity}</p>
