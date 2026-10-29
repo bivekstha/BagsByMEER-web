@@ -46,7 +46,7 @@ async function loadProducts() {
     }
 }
 
-// Render Catalog Grid with Interactive Multi-Image Gallery Support
+// Render Catalog Grid with Automatic & Interactive Multi-Image Gallery Support
 function renderProducts(filter = 'all') {
     productGrid.innerHTML = '';
     const filtered = filter === 'all' ? products : products.filter(p => p.category === filter);
@@ -65,17 +65,15 @@ function renderProducts(filter = 'all') {
 
         let imageHtml = '';
         if (imageUrls.length > 1) {
-            // Unique ID for this card's gallery switcher
             const galleryId = `gallery-${product.id}`;
             
-            // Build clickable thumbnail dots or indicators
             let indicatorsHtml = '';
             imageUrls.forEach((url, idx) => {
                 indicatorsHtml += `<button onclick="window.switchImage('${galleryId}', ${idx})" class="gallery-dot-${galleryId} w-2.5 h-2.5 rounded-full transition-all ${idx === 0 ? 'bg-white scale-125 shadow-md' : 'bg-white/50 hover:bg-white/80'}"></button>`;
             });
 
             imageHtml = `
-                <div class="relative overflow-hidden aspect-[4/3] bg-brand-100 group/gallery">
+                <div class="product-slider-container relative overflow-hidden aspect-[4/3] bg-brand-100 group/gallery" data-gallery-id="${galleryId}">
                     <img id="${galleryId}-img" src="${imageUrls[0]}" alt="${product.name}" class="w-full h-full object-cover group-hover:scale-105 transition-all duration-500 ${isOutOfStock ? 'opacity-50 grayscale' : ''}" data-urls='${JSON.stringify(imageUrls)}' data-current="0">
                     
                     <span class="absolute top-4 left-4 bg-white/90 backdrop-blur-md text-brand-900 text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider">${product.category}</span>
@@ -126,6 +124,16 @@ function renderProducts(filter = 'all') {
         productGrid.appendChild(card);
     });
 }
+
+// Automatic Slideshow Interval (Every 4 Seconds)
+setInterval(() => {
+    document.querySelectorAll('.product-slider-container').forEach(container => {
+        const galleryId = container.getAttribute('data-gallery-id');
+        if (galleryId) {
+            window.nextImage(galleryId);
+        }
+    });
+}, 4000); // 4 seconds interval
 
 // Interactive Gallery Controller Functions
 window.switchImage = function(galleryId, index) {
