@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -32,56 +33,64 @@
     </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..700;1,400..700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..700;1,400..700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         @keyframes floatSlow {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
+
+            0%,
+            100% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
         }
+
         .animate-float {
             animation: floatSlow 4s ease-in-out infinite;
         }
+
         @keyframes pulseGlow {
-            0%, 100% { opacity: 0.4; }
-            50% { opacity: 0.8; }
+
+            0%,
+            100% {
+                opacity: 0.4;
+            }
+
+            50% {
+                opacity: 0.8;
+            }
         }
+
         .animate-glow {
             animation: pulseGlow 5s ease-in-out infinite;
         }
-        @keyframes marquee {
-            0% { transform: translateX(0%); }
-            100% { transform: translateX(-50%); }
-        }
-        .animate-marquee {
-            display: flex;
-            width: max-content;
-            animation: marquee 25s linear infinite;
-        }
-        .animate-marquee:hover {
-            animation-play-state: paused;
-        }
     </style>
 </head>
+
 <body class="bg-brand-50 text-brand-900 font-sans antialiased selection:bg-brand-200">
 
     <!-- Announcement Bar -->
-    <div class="bg-brand-800 text-brand-100 text-xs py-2.5 px-4 text-center font-medium tracking-wider uppercase flex items-center justify-center gap-2">
+    <div
+        class="bg-brand-800 text-brand-100 text-xs py-2.5 px-4 text-center font-medium tracking-wider uppercase flex items-center justify-center gap-2">
         <span>Proudly Handcrafted in Nepal</span>
     </div>
 
     <!-- Navigation -->
     <header class="sticky top-0 z-40 bg-brand-50/90 backdrop-blur-md border-b border-brand-200 transition-all">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-            
-            <!-- Left Side: Menu + Logo with Circular Icon -->
             <div class="flex items-center space-x-3 sm:space-x-4">
                 <button id="mobile-menu-btn" class="text-brand-800 text-xl focus:outline-none p-2">
                     <i class="fa-solid fa-bars"></i>
                 </button>
 
                 <a href="#home" class="flex items-center space-x-2.5">
-                    <div class="relative w-9 h-9 sm:w-10 sm:h-10 rounded-full overflow-hidden border-2 border-brand-600 shadow-md">
+                    <div
+                        class="relative w-9 h-9 sm:w-10 sm:h-10 rounded-full overflow-hidden border-2 border-brand-600 shadow-md">
                         <img src="logo.jpg" alt="BagsByMeer Logo" class="w-full h-full object-cover">
                     </div>
                     <span class="font-serif text-2xl sm:text-3xl font-bold tracking-tight text-brand-800">
@@ -90,7 +99,6 @@
                 </a>
             </div>
 
-            <!-- Center Navigation Links (PC) -->
             <nav class="hidden md:flex items-center space-x-8 text-sm font-medium tracking-wide">
                 <a href="#home" class="hover:text-brand-600 transition">Home</a>
                 <a href="#shop" class="hover:text-brand-600 transition">Our Collections</a>
@@ -99,11 +107,12 @@
                 <a href="#contact" class="hover:text-brand-600 transition">Contact Us</a>
             </nav>
 
-            <!-- Right Side: Cart Icon -->
             <div class="flex items-center space-x-4">
-                <button id="cart-btn" class="relative text-brand-800 hover:text-brand-600 transition focus:outline-none p-2">
+                <button id="cart-btn"
+                    class="relative text-brand-800 hover:text-brand-600 transition focus:outline-none p-2">
                     <i class="fa-solid fa-bag-shopping text-xl"></i>
-                    <span id="cart-badge" class="absolute top-0 right-0 bg-brand-700 text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center shadow-sm">0</span>
+                    <span id="cart-badge"
+                        class="absolute top-0 right-0 bg-brand-700 text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center shadow-sm">0</span>
                 </button>
             </div>
         </div>
@@ -115,16 +124,25 @@
             <div>
                 <div class="flex justify-between items-center mb-8">
                     <span class="font-serif text-xl font-bold text-brand-800">BagsByMeer</span>
-                    <button id="close-mobile-menu" class="text-brand-800 text-lg"><i class="fa-solid fa-xmark"></i></button>
+                    <button id="close-mobile-menu" class="text-brand-800 text-lg"><i
+                            class="fa-solid fa-xmark"></i></button>
                 </div>
                 <nav class="flex flex-col space-y-5 text-base font-medium">
-                    <a href="#home" class="mobile-link text-brand-800 hover:text-brand-600 flex items-center gap-3"><i class="fa-solid fa-house w-5 text-brand-600"></i> Home</a>
-                    <a href="#shop" class="mobile-link text-brand-800 hover:text-brand-600 flex items-center gap-3"><i class="fa-solid fa-bag-shopping w-5 text-brand-600"></i> Collection</a>
-                    <a href="#snapshots" class="mobile-link text-brand-800 hover:text-brand-600 flex items-center gap-3"><i class="fa-solid fa-camera w-5 text-brand-600"></i> Snapshots</a>
-                    <a href="#story" class="mobile-link text-brand-800 hover:text-brand-600 flex items-center gap-3"><i class="fa-solid fa-heart w-5 text-brand-600"></i> Our Story</a>
-                    <a href="#contact" class="mobile-link text-brand-800 hover:text-brand-600 flex items-center gap-3"><i class="fa-solid fa-phone w-5 text-brand-600"></i> Contact Us</a>
+                    <a href="#home" class="mobile-link text-brand-800 hover:text-brand-600 flex items-center gap-3"><i
+                            class="fa-solid fa-house w-5 text-brand-600"></i> Home</a>
+                    <a href="#shop" class="mobile-link text-brand-800 hover:text-brand-600 flex items-center gap-3"><i
+                            class="fa-solid fa-bag-shopping w-5 text-brand-600"></i> Collection</a>
+                    <a href="#snapshots"
+                        class="mobile-link text-brand-800 hover:text-brand-600 flex items-center gap-3"><i
+                            class="fa-solid fa-camera w-5 text-brand-600"></i> Snapshots</a>
+                    <a href="#story" class="mobile-link text-brand-800 hover:text-brand-600 flex items-center gap-3"><i
+                            class="fa-solid fa-heart w-5 text-brand-600"></i> Our Story</a>
+                    <a href="#contact"
+                        class="mobile-link text-brand-800 hover:text-brand-600 flex items-center gap-3"><i
+                            class="fa-solid fa-phone w-5 text-brand-600"></i> Contact Us</a>
                     <hr class="border-brand-200 my-2">
-                    <button id="admin-toggle-btn" class="w-full text-left text-brand-800 hover:text-brand-600 flex items-center gap-3 py-2 font-medium">
+                    <button id="admin-toggle-btn"
+                        class="w-full text-left text-brand-800 hover:text-brand-600 flex items-center gap-3 py-2 font-medium">
                         <i class="fa-solid fa-lock w-5 text-brand-600"></i> Admin Login
                     </button>
                 </nav>
@@ -135,33 +153,43 @@
         </div>
     </div>
 
-    <!-- Hero Section with Larger Constant Logo & Larger Tilted Snapshot Slideshow Card -->
-    <section id="home" class="relative overflow-hidden py-10 lg:py-14 bg-gradient-to-b from-brand-100/60 via-brand-50 to-brand-50">
-        <div class="absolute -top-32 -right-32 w-[500px] h-[500px] bg-amber-200/30 rounded-full blur-3xl pointer-events-none animate-glow"></div>
-        <div class="absolute top-1/3 -left-32 w-96 h-96 bg-brand-200/50 rounded-full blur-3xl pointer-events-none"></div>
+    <!-- Hero Section -->
+    <section id="home"
+        class="relative overflow-hidden py-10 lg:py-14 bg-gradient-to-b from-brand-100/60 via-brand-50 to-brand-50">
+        <div
+            class="absolute -top-32 -right-32 w-[500px] h-[500px] bg-amber-200/30 rounded-full blur-3xl pointer-events-none animate-glow">
+        </div>
+        <div class="absolute top-1/3 -left-32 w-96 h-96 bg-brand-200/50 rounded-full blur-3xl pointer-events-none">
+        </div>
 
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
                 <div class="lg:col-span-6 space-y-5 text-center lg:text-left">
-                    <div class="inline-flex items-center gap-2 bg-white/80 backdrop-blur-md border border-brand-300 text-brand-900 text-xs font-semibold tracking-wider uppercase px-4 py-2 rounded-full shadow-sm">
+                    <div
+                        class="inline-flex items-center gap-2 bg-white/80 backdrop-blur-md border border-brand-300 text-brand-900 text-xs font-semibold tracking-wider uppercase px-4 py-2 rounded-full shadow-sm">
                         <span class="w-2 h-2 rounded-full bg-amber-600 animate-ping"></span>
                         <span>Handcrafted Luxury Bags of Nepal</span>
                     </div>
 
-                    <h1 class="font-serif text-4xl sm:text-6xl lg:text-6xl font-bold tracking-tight text-brand-900 leading-[1.08]">
+                    <h1
+                        class="font-serif text-4xl sm:text-6xl lg:text-6xl font-bold tracking-tight text-brand-900 leading-[1.08]">
                         Stitched in Nepal, <br><span class="italic font-normal text-brand-600">carried</span> worldwide.
                     </h1>
 
                     <p class="text-brand-700 text-base sm:text-lg max-w-xl mx-auto lg:mx-0 font-light leading-relaxed">
-                        Experience unmatched artisanal elegance. Every bag is meticulously handmade using sustainable fabrics, traditional weaving passion, and modern durability.
+                        Experience unmatched artisanal elegance. Every bag is meticulously handmade using sustainable
+                        fabrics, traditional weaving passion, and modern durability.
                     </p>
 
                     <div class="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-2">
-                        <a href="#shop" class="w-full sm:w-auto bg-brand-800 text-brand-50 px-8 py-4 rounded-full font-medium hover:bg-brand-700 transition shadow-xl shadow-brand-800/20 text-center flex items-center justify-center gap-2 group">
+                        <a href="#shop"
+                            class="w-full sm:w-auto bg-brand-800 text-brand-50 px-8 py-4 rounded-full font-medium hover:bg-brand-700 transition shadow-xl shadow-brand-800/20 text-center flex items-center justify-center gap-2 group">
                             <span>Explore Collection</span>
                             <i class="fa-solid fa-arrow-right group-hover:translate-x-1.5 transition"></i>
                         </a>
-                        <a href="https://wa.me/9779861585576?text=Hi%2C%20I%20would%20like%20to%20inquire%20about%20your%20handcrafted%20bags!" target="_blank" class="w-full sm:w-auto border border-green-600/30 bg-green-50/70 backdrop-blur-sm text-green-900 px-8 py-4 rounded-full font-medium hover:bg-green-100 transition text-center flex items-center justify-center space-x-2 shadow-sm">
+                        <a href="https://wa.me/9779861585576?text=Hi%2C%20I%20would%20like%20to%20inquire%20about%20your%20handcrafted%20bags!"
+                            target="_blank"
+                            class="w-full sm:w-auto border border-green-600/30 bg-green-50/70 backdrop-blur-sm text-green-900 px-8 py-4 rounded-full font-medium hover:bg-green-100 transition text-center flex items-center justify-center space-x-2 shadow-sm">
                             <i class="fa-brands fa-whatsapp text-green-600 text-lg"></i>
                             <span>Chat on WhatsApp</span>
                         </a>
@@ -170,16 +198,24 @@
 
                 <!-- Right Side: Larger Constant Logo + Larger Tilted Snapshot Slideshow Card -->
                 <div class="lg:col-span-6 relative flex items-center justify-center gap-4 sm:gap-6">
-                    <div class="relative w-52 sm:w-60 rounded-3xl overflow-hidden shadow-2xl aspect-[4/5] bg-brand-200 border-4 border-white flex-shrink-0 z-10">
+                    <div
+                        class="relative w-52 sm:w-60 rounded-3xl overflow-hidden shadow-2xl aspect-[4/5] bg-brand-200 border-4 border-white flex-shrink-0 z-10">
                         <img src="logo.jpg" alt="BagsByMeer Constant Logo" class="w-full h-full object-cover">
                     </div>
 
-                    <!-- Larger Tilted Snapshot Slideshow Card with Hover Tilt-Back Effect -->
-                    <div class="relative w-48 sm:w-56 rounded-2xl overflow-hidden shadow-2xl aspect-[4/5] bg-brand-100 border-2 border-white transform rotate-6 hover:rotate-0 transition duration-500 flex-shrink-0 group/snap">
-                        <img id="hero-snapshot-ticker" src="https://i.ibb.co/HL15342k/Whats-App-Image-2026-10-29-at-22-29-29.jpg" alt="Snapshot Preview" class="w-full h-full object-cover transition-opacity duration-300">
-                        <div class="absolute bottom-3 inset-x-0 flex items-center justify-between px-3 opacity-0 group-hover/snap:opacity-100 transition-opacity">
-                            <button onclick="window.prevHeroSnap()" class="bg-black/60 text-white w-7 h-7 rounded-full flex items-center justify-center text-xs backdrop-blur-sm"><i class="fa-solid fa-chevron-left"></i></button>
-                            <button onclick="window.nextHeroSnap()" class="bg-black/60 text-white w-7 h-7 rounded-full flex items-center justify-center text-xs backdrop-blur-sm"><i class="fa-solid fa-chevron-right"></i></button>
+                    <div
+                        class="relative w-48 sm:w-56 rounded-2xl overflow-hidden shadow-2xl aspect-[4/5] bg-brand-100 border-2 border-white transform rotate-6 hover:rotate-0 transition duration-500 flex-shrink-0 group/snap">
+                        <img id="hero-snapshot-ticker"
+                            src="https://i.ibb.co/HL15342k/Whats-App-Image-2026-10-29-at-22-29-29.jpg"
+                            alt="Snapshot Preview" class="w-full h-full object-cover transition-opacity duration-300">
+                        <div
+                            class="absolute bottom-3 inset-x-0 flex items-center justify-between px-3 opacity-0 group-hover/snap:opacity-100 transition-opacity">
+                            <button onclick="window.prevHeroSnap()"
+                                class="bg-black/60 text-white w-7 h-7 rounded-full flex items-center justify-center text-xs backdrop-blur-sm"><i
+                                    class="fa-solid fa-chevron-left"></i></button>
+                            <button onclick="window.nextHeroSnap()"
+                                class="bg-black/60 text-white w-7 h-7 rounded-full flex items-center justify-center text-xs backdrop-blur-sm"><i
+                                    class="fa-solid fa-chevron-right"></i></button>
                         </div>
                     </div>
                 </div>
@@ -191,7 +227,8 @@
     <div class="bg-brand-200/40 border-y border-brand-200/60 py-6">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 sm:grid-cols-3 gap-6 text-center">
             <div class="flex items-center justify-center space-x-3">
-                <div class="w-10 h-10 rounded-full bg-brand-800 text-white flex items-center justify-center text-lg shadow-sm">
+                <div
+                    class="w-10 h-10 rounded-full bg-brand-800 text-white flex items-center justify-center text-lg shadow-sm">
                     <i class="fa-solid fa-hands-holding"></i>
                 </div>
                 <div class="text-left">
@@ -200,7 +237,8 @@
                 </div>
             </div>
             <div class="flex items-center justify-center space-x-3">
-                <div class="w-10 h-10 rounded-full bg-brand-800 text-white flex items-center justify-center text-lg shadow-sm">
+                <div
+                    class="w-10 h-10 rounded-full bg-brand-800 text-white flex items-center justify-center text-lg shadow-sm">
                     <i class="fa-solid fa-seedling"></i>
                 </div>
                 <div class="text-left">
@@ -209,7 +247,8 @@
                 </div>
             </div>
             <div class="flex items-center justify-center space-x-3">
-                <div class="w-10 h-10 rounded-full bg-brand-800 text-white flex items-center justify-center text-lg shadow-sm">
+                <div
+                    class="w-10 h-10 rounded-full bg-brand-800 text-white flex items-center justify-center text-lg shadow-sm">
                     <i class="fa-solid fa-truck-fast"></i>
                 </div>
                 <div class="text-left">
@@ -229,10 +268,18 @@
         </div>
 
         <div class="flex flex-wrap justify-center gap-3 mb-12">
-            <button class="filter-btn active-filter bg-brand-800 text-brand-50 px-6 py-2.5 rounded-full text-sm font-medium transition shadow-sm" data-filter="all">All Bags</button>
-            <button class="filter-btn bg-brand-200/60 text-brand-800 px-6 py-2.5 rounded-full text-sm font-medium hover:bg-brand-200 transition" data-filter="tote">Tote Bags</button>
-            <button class="filter-btn bg-brand-200/60 text-brand-800 px-6 py-2.5 rounded-full text-sm font-medium hover:bg-brand-200 transition" data-filter="crossbody">Crossbody</button>
-            <button class="filter-btn bg-brand-200/60 text-brand-800 px-6 py-2.5 rounded-full text-sm font-medium hover:bg-brand-200 transition" data-filter="backpack">Backpacks</button>
+            <button
+                class="filter-btn active-filter bg-brand-800 text-brand-50 px-6 py-2.5 rounded-full text-sm font-medium transition shadow-sm"
+                data-filter="all">All Bags</button>
+            <button
+                class="filter-btn bg-brand-200/60 text-brand-800 px-6 py-2.5 rounded-full text-sm font-medium hover:bg-brand-200 transition"
+                data-filter="tote">Tote Bags</button>
+            <button
+                class="filter-btn bg-brand-200/60 text-brand-800 px-6 py-2.5 rounded-full text-sm font-medium hover:bg-brand-200 transition"
+                data-filter="crossbody">Crossbody</button>
+            <button
+                class="filter-btn bg-brand-200/60 text-brand-800 px-6 py-2.5 rounded-full text-sm font-medium hover:bg-brand-200 transition"
+                data-filter="backpack">Backpacks</button>
         </div>
 
         <div id="product-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -240,29 +287,49 @@
         </div>
     </section>
 
-    <!-- SNAPSHOTS SECTION WITH RIGHT-TO-LEFT MARQUEE ANIMATION -->
+    <!-- SNAPSHOTS SECTION WITH SMOOTH RIGHT-TO-LEFT CAROUSEL ANIMATION -->
     <section id="snapshots" class="py-20 bg-brand-100/40 border-t border-brand-200 overflow-hidden">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-12">
             <div class="text-center max-w-2xl mx-auto mb-8">
-                <span class="text-brand-600 font-semibold tracking-wider text-xs uppercase">Moments & Craftsmanship</span>
+                <span class="text-brand-600 font-semibold tracking-wider text-xs uppercase">Moments &
+                    Craftsmanship</span>
                 <h2 class="font-serif text-3xl sm:text-5xl font-bold text-brand-900 mt-2 mb-4">BagsByMeer Snapshots</h2>
                 <p class="text-brand-700 font-light">Glimpses of our workshop, customer moments, and raw textures.</p>
             </div>
 
             <!-- Snapshot Filters -->
             <div class="flex flex-wrap justify-center gap-3">
-                <button class="snapshot-filter-btn active-snap-filter bg-brand-800 text-brand-50 px-6 py-2.5 rounded-full text-sm font-medium transition shadow-sm" data-filter="all">All Photos</button>
-                <button class="snapshot-filter-btn bg-brand-200/60 text-brand-800 px-6 py-2.5 rounded-full text-sm font-medium hover:bg-brand-200 transition" data-filter="workshop">Workshop</button>
-                <button class="snapshot-filter-btn bg-brand-200/60 text-brand-800 px-6 py-2.5 rounded-full text-sm font-medium hover:bg-brand-200 transition" data-filter="customers">Customer Styles</button>
-                <button class="snapshot-filter-btn bg-brand-200/60 text-brand-800 px-6 py-2.5 rounded-full text-sm font-medium hover:bg-brand-200 transition" data-filter="details">Close-up Details</button>
+                <button
+                    class="snapshot-filter-btn active-snap-filter bg-brand-800 text-brand-50 px-6 py-2.5 rounded-full text-sm font-medium transition shadow-sm"
+                    data-filter="all">All Photos</button>
+                <button
+                    class="snapshot-filter-btn bg-brand-200/60 text-brand-800 px-6 py-2.5 rounded-full text-sm font-medium hover:bg-brand-200 transition"
+                    data-filter="workshop">Workshop</button>
+                <button
+                    class="snapshot-filter-btn bg-brand-200/60 text-brand-800 px-6 py-2.5 rounded-full text-sm font-medium hover:bg-brand-200 transition"
+                    data-filter="customers">Customer Styles</button>
+                <button
+                    class="snapshot-filter-btn bg-brand-200/60 text-brand-800 px-6 py-2.5 rounded-full text-sm font-medium hover:bg-brand-200 transition"
+                    data-filter="details">Close-up Details</button>
             </div>
         </div>
 
-        <!-- Sliding Marquee Track Container -->
-        <div class="relative w-full overflow-hidden py-4">
-            <div id="snapshot-marquee-track" class="animate-marquee flex gap-6 px-3">
-                <div class="text-center py-12 text-brand-600 w-full">Loading animated snapshots...</div>
+        <!-- Smooth 3D Coverflow Carousel Container -->
+        <div class="relative w-full max-w-6xl mx-auto px-4 py-8 flex items-center justify-center min-h-[400px]">
+            <div id="snapshot-carousel-track"
+                class="relative w-full flex items-center justify-center transition-all duration-700 ease-in-out">
+                <div class="text-center py-12 text-brand-600">Loading snapshots carousel...</div>
             </div>
+
+            <!-- Manual Controls for Carousel -->
+            <button onclick="window.prevSnapshot()"
+                class="absolute left-4 sm:left-12 z-20 bg-white/80 hover:bg-white text-brand-900 w-12 h-12 rounded-full shadow-lg flex items-center justify-center transition">
+                <i class="fa-solid fa-chevron-left text-lg"></i>
+            </button>
+            <button onclick="window.nextSnapshot()"
+                class="absolute right-4 sm:right-12 z-20 bg-white/80 hover:bg-white text-brand-900 w-12 h-12 rounded-full shadow-lg flex items-center justify-center transition">
+                <i class="fa-solid fa-chevron-right text-lg"></i>
+            </button>
         </div>
     </section>
 
@@ -276,9 +343,13 @@
                 </div>
                 <div class="lg:col-span-6 space-y-6">
                     <span class="text-brand-600 font-semibold tracking-wider text-xs uppercase">Behind The Seams</span>
-                    <h2 class="font-serif text-3xl sm:text-4xl font-bold text-brand-900">Crafted with Passion in Nepal</h2>
+                    <h2 class="font-serif text-3xl sm:text-4xl font-bold text-brand-900">Crafted with Passion in Nepal
+                    </h2>
                     <p class="text-brand-700 font-light leading-relaxed">
-                        Behind every stitch at BagsByMeer lies a mother’s labor of love. What began as a heartfelt hobby in Kathmandu, Nepal, has blossomed into an inspiring journey as Meera Shrestha dedicates herself to growing her craft, honing her talent, and supporting her family through the beauty of handmade bags.
+                        Behind every stitch at BagsByMeer lies a mother’s labor of love. What began as a heartfelt hobby
+                        in Kathmandu, Nepal, has blossomed into an inspiring journey as Meera Shrestha dedicates herself
+                        to growing her craft, honing her talent, and supporting her family through the beauty of
+                        handmade bags.
                     </p>
                 </div>
             </div>
@@ -291,15 +362,19 @@
             <span class="text-brand-600 font-semibold tracking-wider text-xs uppercase">Get in Touch</span>
             <h2 class="font-serif text-3xl sm:text-4xl font-bold text-brand-900">Connect with BagsByMeer</h2>
             <div class="flex flex-wrap justify-center gap-6 pt-2">
-                <a href="https://wa.me/9779861585576?text=Hello%2C%20I%20would%20like%20to%20place%20an%20order%20or%20ask%20about%20availability." target="_blank" class="flex items-center space-x-3 bg-brand-50 px-6 py-4 rounded-2xl shadow-sm border border-brand-200 hover:shadow-md transition text-brand-900 font-medium">
+                <a href="https://wa.me/9779861585576?text=Hello%2C%20I%20would%20like%20to%20place%20an%20order%20or%20ask%20about%20availability."
+                    target="_blank"
+                    class="flex items-center space-x-3 bg-brand-50 px-6 py-4 rounded-2xl shadow-sm border border-brand-200 hover:shadow-md transition text-brand-900 font-medium">
                     <i class="fa-brands fa-whatsapp text-green-600 text-xl"></i>
                     <span>WhatsApp: +977 9861585576</span>
                 </a>
-                <a href="https://www.instagram.com/bagsbymeer?obrf=aXFwNG8xcjF1cHl4" target="_blank" class="flex items-center space-x-3 bg-brand-50 px-6 py-4 rounded-2xl shadow-sm border border-brand-200 hover:shadow-md transition text-brand-900 font-medium">
+                <a href="https://www.instagram.com/bagsbymeer?obrf=aXFwNG8xcjF1cHl4" target="_blank"
+                    class="flex items-center space-x-3 bg-brand-50 px-6 py-4 rounded-2xl shadow-sm border border-brand-200 hover:shadow-md transition text-brand-900 font-medium">
                     <i class="fa-brands fa-instagram text-pink-600 text-lg"></i>
                     <span>Instagram (@bagsbymeer)</span>
                 </a>
-                <a href="https://www.tiktok.com/@bagsbymeer" target="_blank" class="flex items-center space-x-3 bg-brand-50 px-6 py-4 rounded-2xl shadow-sm border border-brand-200 hover:shadow-md transition text-brand-900 font-medium">
+                <a href="https://www.tiktok.com/@bagsbymeer" target="_blank"
+                    class="flex items-center space-x-3 bg-brand-50 px-6 py-4 rounded-2xl shadow-sm border border-brand-200 hover:shadow-md transition text-brand-900 font-medium">
                     <i class="fa-brands fa-tiktok text-black text-lg"></i>
                     <span>TikTok (@bagsbymeer)</span>
                 </a>
@@ -313,42 +388,53 @@
             <div class="text-center mb-8">
                 <span class="text-brand-600 font-semibold tracking-wider text-xs uppercase">Got Questions?</span>
                 <h2 class="font-serif text-3xl sm:text-b font-bold text-brand-900 mt-1">Ask Us Anything</h2>
-                <p class="text-brand-700 text-sm font-light mt-2">Select a common question below or send a message straight to our inbox.</p>
+                <p class="text-brand-700 text-sm font-light mt-2">Select a common question below or send a message
+                    straight to our inbox.</p>
             </div>
 
             <div class="flex flex-wrap justify-center gap-2 mb-6">
-                <button type="button" onclick="setQuery('Do you take custom bag designs and sizes?')" class="bg-white border border-brand-200 text-brand-800 text-xs px-4 py-2 rounded-full hover:bg-brand-800 hover:text-white transition shadow-sm">
+                <button type="button" onclick="setQuery('Do you take custom bag designs and sizes?')"
+                    class="bg-white border border-brand-200 text-brand-800 text-xs px-4 py-2 rounded-full hover:bg-brand-800 hover:text-white transition shadow-sm">
                     ✨ Custom bag designs?
                 </button>
-                <button type="button" onclick="setQuery('What is the delivery time within Nepal?')" class="bg-white border border-brand-200 text-brand-800 text-xs px-4 py-2 rounded-full hover:bg-brand-800 hover:text-white transition shadow-sm">
+                <button type="button" onclick="setQuery('What is the delivery time within Nepal?')"
+                    class="bg-white border border-brand-200 text-brand-800 text-xs px-4 py-2 rounded-full hover:bg-brand-800 hover:text-white transition shadow-sm">
                     🚚 Delivery time in Nepal?
                 </button>
-                <button type="button" onclick="setQuery('What payment methods do you accept?')" class="bg-white border border-brand-200 text-brand-800 text-xs px-4 py-2 rounded-full hover:bg-brand-800 hover:text-white transition shadow-sm">
+                <button type="button" onclick="setQuery('What payment methods do you accept?')"
+                    class="bg-white border border-brand-200 text-brand-800 text-xs px-4 py-2 rounded-full hover:bg-brand-800 hover:text-white transition shadow-sm">
                     💳 Payment methods?
                 </button>
             </div>
 
             <form id="inquiry-form" class="bg-white p-6 sm:p-8 rounded-3xl border border-brand-200 shadow-sm space-y-4">
                 <input type="hidden" name="access_key" value="d11a18f8-5ce3-4fd2-97b3-e9c0da0855d0">
-                
+
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                         <label class="block text-xs font-semibold uppercase text-brand-700 mb-1">Your Name</label>
-                        <input type="text" name="name" id="inquiry-name" required placeholder="Enter your name..." class="w-full bg-brand-50 border border-brand-200 rounded-xl px-4 py-2.5 text-sm focus:outline-brand-600">
+                        <input type="text" name="name" id="inquiry-name" required placeholder="Enter your name..."
+                            class="w-full bg-brand-50 border border-brand-200 rounded-xl px-4 py-2.5 text-sm focus:outline-brand-600">
                     </div>
                     <div>
                         <label class="block text-xs font-semibold uppercase text-brand-700 mb-1">Phone or Email</label>
-                        <input type="text" name="contact" id="inquiry-contact" required placeholder="Phone number / Email..." class="w-full bg-brand-50 border border-brand-200 rounded-xl px-4 py-2.5 text-sm focus:outline-brand-600">
+                        <input type="text" name="contact" id="inquiry-contact" required
+                            placeholder="Phone number / Email..."
+                            class="w-full bg-brand-50 border border-brand-200 rounded-xl px-4 py-2.5 text-sm focus:outline-brand-600">
                     </div>
                 </div>
                 <div>
-                    <label class="block text-xs font-semibold uppercase text-brand-700 mb-1">Your Message / Query</label>
-                    <textarea name="message" id="inquiry-message" rows="3" required placeholder="Type your question here..." class="w-full bg-brand-50 border border-brand-200 rounded-xl px-4 py-2.5 text-sm focus:outline-brand-600"></textarea>
+                    <label class="block text-xs font-semibold uppercase text-brand-700 mb-1">Your Message /
+                        Query</label>
+                    <textarea name="message" id="inquiry-message" rows="3" required
+                        placeholder="Type your question here..."
+                        class="w-full bg-brand-50 border border-brand-200 rounded-xl px-4 py-2.5 text-sm focus:outline-brand-600"></textarea>
                 </div>
 
                 <div id="form-result" class="text-sm font-medium text-center hidden"></div>
 
-                <button type="submit" id="inquiry-submit-btn" class="w-full bg-brand-800 text-white py-3 rounded-xl font-medium hover:bg-brand-700 transition shadow-md">
+                <button type="submit" id="inquiry-submit-btn"
+                    class="w-full bg-brand-800 text-white py-3 rounded-xl font-medium hover:bg-brand-700 transition shadow-md">
                     Send Private Message
                 </button>
             </form>
@@ -359,7 +445,8 @@
     <footer class="bg-brand-900 text-brand-100 pt-16 pb-12">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-3 gap-10 mb-12">
             <div class="space-y-4">
-                <span class="font-serif text-2xl font-bold text-white">Bags<span class="italic font-normal text-brand-200">By</span>Meer</span>
+                <span class="font-serif text-2xl font-bold text-white">Bags<span
+                        class="italic font-normal text-brand-200">By</span>Meer</span>
                 <p class="text-brand-200/80 text-sm font-light">
                     Handcrafted with love and perfection in Kathmandu, Nepal.
                 </p>
@@ -369,7 +456,8 @@
                 <ul class="space-y-2 text-sm text-brand-200/80">
                     <li><i class="fa-solid fa-location-dot mr-2"></i> Kathmandu, Nepal</li>
                     <li>
-                        <a href="https://wa.me/9779861585576?text=Hi%2C%20I%20have%20a%20question%20regarding%20BagsByMeer." target="_blank" class="hover:text-white transition flex items-center gap-1.5">
+                        <a href="https://wa.me/9779861585576?text=Hi%2C%20I%20have%20a%20question%20regarding%20BagsByMeer."
+                            target="_blank" class="hover:text-white transition flex items-center gap-1.5">
                             <i class="fa-brands fa-whatsapp text-green-500"></i> +977 9861585576
                         </a>
                     </li>
@@ -378,29 +466,38 @@
             <div>
                 <h4 class="font-semibold text-white mb-4 text-sm tracking-wider uppercase">Follow Us</h4>
                 <div class="flex space-x-4 text-xl">
-                    <a href="https://www.instagram.com/bagsbymeer?obrf=aXFwNG8xcjF1cHl4" target="_blank" class="hover:text-white transition"><i class="fa-brands fa-instagram"></i></a>
-                    <a href="https://www.tiktok.com/@bagsbymeer" target="_blank" class="hover:text-white transition"><i class="fa-brands fa-tiktok"></i></a>
+                    <a href="https://www.instagram.com/bagsbymeer?obrf=aXFwNG8xcjF1cHl4" target="_blank"
+                        class="hover:text-white transition"><i class="fa-brands fa-instagram"></i></a>
+                    <a href="https://www.tiktok.com/@bagsbymeer" target="_blank" class="hover:text-white transition"><i
+                            class="fa-brands fa-tiktok"></i></a>
                 </div>
             </div>
         </div>
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 border-t border-brand-800 text-center text-xs text-brand-300">
+        <div
+            class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 border-t border-brand-800 text-center text-xs text-brand-300">
             &copy; 2026 BagsByMeer. All rights reserved.
         </div>
     </footer>
 
     <!-- SECURE ADMIN LOGIN MODAL -->
-    <div id="admin-login-modal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div id="admin-login-modal"
+        class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden items-center justify-center p-4">
         <div class="bg-white rounded-3xl max-w-md w-full p-8 shadow-2xl relative">
             <div class="flex justify-between items-center pb-4 border-b border-brand-200 mb-6">
-                <h3 class="font-serif text-xl font-bold text-brand-900"><i class="fa-solid fa-lock mr-2 text-brand-600"></i> Admin Portal Login</h3>
-                <button id="close-login" class="text-brand-900 text-xl font-bold"><i class="fa-solid fa-xmark"></i></button>
+                <h3 class="font-serif text-xl font-bold text-brand-900"><i
+                        class="fa-solid fa-lock mr-2 text-brand-600"></i> Admin Portal Login</h3>
+                <button id="close-login" class="text-brand-900 text-xl font-bold"><i
+                        class="fa-solid fa-xmark"></i></button>
             </div>
             <form id="login-form" class="space-y-4">
                 <div>
-                    <label class="block text-xs font-semibold uppercase text-brand-700 mb-1">Enter Admin Password / PIN</label>
-                    <input type="password" id="admin-pin-input" required placeholder="Enter passcode..." class="w-full bg-brand-50 border border-brand-200 rounded-xl px-4 py-3 text-sm focus:outline-brand-600">
+                    <label class="block text-xs font-semibold uppercase text-brand-700 mb-1">Enter Admin Password /
+                        PIN</label>
+                    <input type="password" id="admin-pin-input" required placeholder="Enter passcode..."
+                        class="w-full bg-brand-50 border border-brand-200 rounded-xl px-4 py-3 text-sm focus:outline-brand-600">
                 </div>
-                <button type="submit" class="w-full bg-brand-800 text-white py-3 rounded-xl font-medium hover:bg-brand-700 transition shadow-md">
+                <button type="submit"
+                    class="w-full bg-brand-800 text-white py-3 rounded-xl font-medium hover:bg-brand-700 transition shadow-md">
                     Verify & Enter Dashboard
                 </button>
             </form>
@@ -408,17 +505,24 @@
     </div>
 
     <!-- ADMIN MODAL DASHBOARD WITH TABS -->
-    <div id="admin-modal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden items-center justify-center p-4 overflow-y-auto">
+    <div id="admin-modal"
+        class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden items-center justify-center p-4 overflow-y-auto">
         <div class="bg-white rounded-3xl max-w-4xl w-full p-8 shadow-2xl relative max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center pb-4 border-b border-brand-200 mb-6">
-                <h3 class="font-serif text-2xl font-bold text-brand-900"><i class="fa-solid fa-database mr-2"></i> BagsByMeer Management Dashboard</h3>
-                <button id="close-admin" class="text-brand-900 text-xl font-bold"><i class="fa-solid fa-xmark"></i></button>
+                <h3 class="font-serif text-2xl font-bold text-brand-900"><i class="fa-solid fa-database mr-2"></i>
+                    BagsByMeer Management Dashboard</h3>
+                <button id="close-admin" class="text-brand-900 text-xl font-bold"><i
+                        class="fa-solid fa-xmark"></i></button>
             </div>
 
             <!-- Tabs -->
             <div class="flex space-x-4 mb-6 border-b border-brand-200 pb-2">
-                <button id="tab-products-btn" class="admin-tab px-4 py-2 rounded-xl text-sm font-bold bg-brand-800 text-white transition">Manage Inventory</button>
-                <button id="tab-snapshots-btn" class="admin-tab px-4 py-2 rounded-xl text-sm font-medium bg-brand-100 text-brand-800 hover:bg-brand-200 transition">Manage Snapshots</button>
+                <button id="tab-products-btn"
+                    class="admin-tab px-4 py-2 rounded-xl text-sm font-bold bg-brand-800 text-white transition">Manage
+                    Inventory</button>
+                <button id="tab-snapshots-btn"
+                    class="admin-tab px-4 py-2 rounded-xl text-sm font-medium bg-brand-100 text-brand-800 hover:bg-brand-200 transition">Manage
+                    Snapshots</button>
             </div>
 
             <!-- Tab 1: Products -->
@@ -429,11 +533,13 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                             <label class="block text-xs font-semibold uppercase text-brand-700 mb-1">Bag Name</label>
-                            <input type="text" id="p-name" required class="w-full bg-white border border-brand-200 rounded-xl px-4 py-2 text-sm focus:outline-brand-600">
+                            <input type="text" id="p-name" required
+                                class="w-full bg-white border border-brand-200 rounded-xl px-4 py-2 text-sm focus:outline-brand-600">
                         </div>
                         <div>
                             <label class="block text-xs font-semibold uppercase text-brand-700 mb-1">Category</label>
-                            <select id="p-category" class="w-full bg-white border border-brand-200 rounded-xl px-4 py-2 text-sm focus:outline-brand-600">
+                            <select id="p-category"
+                                class="w-full bg-white border border-brand-200 rounded-xl px-4 py-2 text-sm focus:outline-brand-600">
                                 <option value="tote">Tote</option>
                                 <option value="crossbody">Crossbody</option>
                                 <option value="backpack">Backpack</option>
@@ -441,27 +547,36 @@
                         </div>
                         <div>
                             <label class="block text-xs font-semibold uppercase text-brand-700 mb-1">Price (Rs.)</label>
-                            <input type="number" step="0.01" id="p-price" required class="w-full bg-white border border-brand-200 rounded-xl px-4 py-2 text-sm focus:outline-brand-600">
+                            <input type="number" step="0.01" id="p-price" required
+                                class="w-full bg-white border border-brand-200 rounded-xl px-4 py-2 text-sm focus:outline-brand-600">
                         </div>
                         <div>
-                            <label class="block text-xs font-semibold uppercase text-brand-700 mb-1">Stock Status</label>
-                            <select id="p-stock" class="w-full bg-white border border-brand-200 rounded-xl px-4 py-2 text-sm focus:outline-brand-600">
+                            <label class="block text-xs font-semibold uppercase text-brand-700 mb-1">Stock
+                                Status</label>
+                            <select id="p-stock"
+                                class="w-full bg-white border border-brand-200 rounded-xl px-4 py-2 text-sm focus:outline-brand-600">
                                 <option value="in">In Stock</option>
                                 <option value="out">Out of Stock</option>
                             </select>
                         </div>
                     </div>
                     <div>
-                        <label class="block text-xs font-semibold uppercase text-brand-700 mb-1">Image URLs (Comma separated for multiple images)</label>
-                        <input type="text" id="p-image" placeholder="https://img1.jpg, https://img2.jpg" class="w-full bg-white border border-brand-200 rounded-xl px-4 py-2 text-sm focus:outline-brand-600 mb-2">
+                        <label class="block text-xs font-semibold uppercase text-brand-700 mb-1">Image URLs (Comma
+                            separated for multiple images)</label>
+                        <input type="text" id="p-image" placeholder="https://img1.jpg, https://img2.jpg"
+                            class="w-full bg-white border border-brand-200 rounded-xl px-4 py-2 text-sm focus:outline-brand-600 mb-2">
                     </div>
                     <div>
                         <label class="block text-xs font-semibold uppercase text-brand-700 mb-1">Description</label>
-                        <textarea id="p-desc" rows="2" class="w-full bg-white border border-brand-200 rounded-xl px-4 py-2 text-sm focus:outline-brand-600"></textarea>
+                        <textarea id="p-desc" rows="2"
+                            class="w-full bg-white border border-brand-200 rounded-xl px-4 py-2 text-sm focus:outline-brand-600"></textarea>
                     </div>
                     <div class="flex justify-end space-x-3 pt-2">
-                        <button type="button" id="reset-form" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-xl text-sm font-medium">Cancel</button>
-                        <button type="submit" id="save-product-btn" class="px-6 py-2 bg-brand-800 text-white rounded-xl text-sm font-medium hover:bg-brand-700">Save Item to Database</button>
+                        <button type="button" id="reset-form"
+                            class="px-4 py-2 bg-gray-200 text-gray-700 rounded-xl text-sm font-medium">Cancel</button>
+                        <button type="submit" id="save-product-btn"
+                            class="px-6 py-2 bg-brand-800 text-white rounded-xl text-sm font-medium hover:bg-brand-700">Save
+                            Item to Database</button>
                     </div>
                 </form>
 
@@ -476,12 +591,15 @@
                     <h4 id="snapshot-form-title" class="font-bold text-brand-900 text-lg">Add New Snapshot Photo(s)</h4>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-xs font-semibold uppercase text-brand-700 mb-1">Photo Title / Caption</label>
-                            <input type="text" id="s-title" required placeholder="e.g. Workshop stitching moment" class="w-full bg-white border border-brand-200 rounded-xl px-4 py-2 text-sm focus:outline-brand-600">
+                            <label class="block text-xs font-semibold uppercase text-brand-700 mb-1">Photo Title /
+                                Caption</label>
+                            <input type="text" id="s-title" required placeholder="e.g. Workshop stitching moment"
+                                class="w-full bg-white border border-brand-200 rounded-xl px-4 py-2 text-sm focus:outline-brand-600">
                         </div>
                         <div>
                             <label class="block text-xs font-semibold uppercase text-brand-700 mb-1">Category</label>
-                            <select id="s-category" class="w-full bg-white border border-brand-200 rounded-xl px-4 py-2 text-sm focus:outline-brand-600">
+                            <select id="s-category"
+                                class="w-full bg-white border border-brand-200 rounded-xl px-4 py-2 text-sm focus:outline-brand-600">
                                 <option value="workshop">Workshop</option>
                                 <option value="customers">Customer Styles</option>
                                 <option value="details">Close-up Details</option>
@@ -489,12 +607,17 @@
                         </div>
                     </div>
                     <div>
-                        <label class="block text-xs font-semibold uppercase text-brand-700 mb-1">Image URL(s) - Comma separated for multiple photos</label>
-                        <input type="text" id="s-image" required placeholder="https://img1.jpg, https://img2.jpg..." class="w-full bg-white border border-brand-200 rounded-xl px-4 py-2 text-sm focus:outline-brand-600">
+                        <label class="block text-xs font-semibold uppercase text-brand-700 mb-1">Image URL(s) - Comma
+                            separated for multiple photos</label>
+                        <input type="text" id="s-image" required placeholder="https://img1.jpg, https://img2.jpg..."
+                            class="w-full bg-white border border-brand-200 rounded-xl px-4 py-2 text-sm focus:outline-brand-600">
                     </div>
                     <div class="flex justify-end space-x-3 pt-2">
-                        <button type="button" id="reset-snapshot-form" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-xl text-sm font-medium">Cancel</button>
-                        <button type="submit" id="save-snapshot-btn" class="px-6 py-2 bg-brand-800 text-white rounded-xl text-sm font-medium hover:bg-brand-700">Save Snapshot</button>
+                        <button type="button" id="reset-snapshot-form"
+                            class="px-4 py-2 bg-gray-200 text-gray-700 rounded-xl text-sm font-medium">Cancel</button>
+                        <button type="submit" id="save-snapshot-btn"
+                            class="px-6 py-2 bg-brand-800 text-white rounded-xl text-sm font-medium hover:bg-brand-700">Save
+                            Snapshot</button>
                     </div>
                 </form>
 
@@ -509,7 +632,8 @@
         <div class="bg-brand-50 w-full max-w-md h-full shadow-2xl flex flex-col justify-between p-6">
             <div>
                 <div class="flex items-center justify-between pb-4 border-b border-brand-200">
-                    <h3 class="font-serif text-xl font-bold text-brand-900">Your Shopping Bag (<span id="cart-count-header">0</span>)</h3>
+                    <h3 class="font-serif text-xl font-bold text-brand-900">Your Shopping Bag (<span
+                            id="cart-count-header">0</span>)</h3>
                     <button id="close-cart" class="text-brand-800 text-xl"><i class="fa-solid fa-xmark"></i></button>
                 </div>
                 <div id="cart-items" class="py-6 space-y-4 overflow-y-auto max-h-[50vh]"></div>
@@ -519,7 +643,8 @@
                     <span>Subtotal:</span>
                     <span id="cart-subtotal">Rs. 0.00</span>
                 </div>
-                <button onclick="alert('Proceeding to checkout!');" class="w-full bg-brand-800 text-white py-3.5 rounded-xl font-medium hover:bg-brand-700 transition">
+                <button onclick="alert('Proceeding to checkout!');"
+                    class="w-full bg-brand-800 text-white py-3.5 rounded-xl font-medium hover:bg-brand-700 transition">
                     Proceed to Checkout
                 </button>
             </div>
@@ -529,4 +654,5 @@
     <!-- Script File Link -->
     <script type="module" src="script.js"></script>
 </body>
+
 </html>

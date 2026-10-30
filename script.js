@@ -17,6 +17,8 @@ const db = getFirestore(app);
 
 let products = [];
 let snapshots = [];
+let filteredSnapshots = [];
+let currentSnapshotIndex = 0;
 let heroSnapshots = [];
 let heroSnapIdx = 0;
 let cart = [];
@@ -72,13 +74,13 @@ async function loadSnapshots() {
                 heroSnapshots.push(...urls);
             }
         });
-        renderSnapshots(activeSnapshotFilter);
+        filterAndRenderSnapshots(activeSnapshotFilter);
         renderAdminSnapshotList();
     } catch (error) {
         console.error("Error loading snapshots:", error);
-        const marqueeTrack = document.getElementById('snapshot-marquee-track');
-        if (marqueeTrack) {
-            marqueeTrack.innerHTML = `<div class="text-center py-8 text-red-600 w-full">Failed to load snapshots gallery.</div>`;
+        const track = document.getElementById('snapshot-carousel-track');
+        if (track) {
+            track.innerHTML = `<div class="text-center py-8 text-red-600 w-full">Failed to load snapshots gallery.</div>`;
         }
     }
 }
@@ -87,7 +89,7 @@ async function loadSnapshots() {
 function renderProducts(filter = 'all') {
     productGrid.innerHTML = '';
     const filtered = filter === 'all' ? products : products.filter(p => p.category === filter);
-    
+
     if (filtered.length === 0) {
         productGrid.innerHTML = `<div class="col-span-full text-center py-12 text-brand-600 font-light">No bags found in this category. Use the Admin panel to add some!</div>`;
         return;
@@ -139,10 +141,10 @@ function renderProducts(filter = 'all') {
                 </div>
                 <div class="flex items-center justify-between mt-6 pt-4 border-t border-brand-100">
                     <span class="text-lg font-bold text-brand-900">Rs. ${Number(product.price).toFixed(2)}</span>
-                    ${isOutOfStock 
-                        ? '<span class="text-xs font-semibold text-red-500 uppercase tracking-wider">Unavailable</span>' 
-                        : `<button onclick="window.addToCart('${product.id}')" class="bg-brand-800 text-white px-4 py-2.5 rounded-xl text-sm font-medium hover:bg-brand-700 transition shadow-sm">+ Add</button>`
-                    }
+                    ${isOutOfStock
+                ? '<span class="text-xs font-semibold text-red-500 uppercase tracking-wider">Unavailable</span>'
+                : `<button onclick="window.addToCart('${product.id}')" class="bg-brand-800 text-white px-4 py-2.5 rounded-xl text-sm font-medium hover:bg-brand-700 transition shadow-sm">+ Add</button>`
+            }
                 </div>
             </div>
         `;
@@ -150,33 +152,60 @@ function renderProducts(filter = 'all') {
     });
 }
 
-// Render Snapshots into the Right-to-Left Sliding Marquee Track
-function renderSnapshots(filter = 'all') {
-    const track = document.getElementById('snapshot-marquee-track');
-    if (!track) return;
-    
-    track.innerHTML = '';
-    const filtered = filter === 'all' ? snapshots : snapshots.filter(s => s.category === filter);
+// Filter and render snapshots for the 3D coverflow carousel
+function filterAndRenderSnapshots(filter) {
+    activeSnapshotFilter = filter;
+    filteredSnapshots = filter === 'all' ? snapshots : snapshots.filter(s => s.category === filter);
+    currentSnapshotIndex = 0;
+    renderSnapshotCarousel();
+}
 
-    if (filtered.length === 0) {
+function renderSnapshotCarousel() {
+    const track = document.getElementById('snapshot-carousel-track');
+    if (!track) return;
+
+    track.innerHTML = '';
+
+    if (filteredSnapshots.length === 0) {
         track.innerHTML = `<div class="text-center py-12 text-brand-600 font-light w-full">No snapshots found in this category.</div>`;
         return;
     }
 
-    const loopItems = [...filtered, ...filtered];
+    // Determine Prev, Current (Main/Larger), and Next indices
+    const total = filteredSnapshots.length;
+    const prevIdx = (currentSnapshotIndex - 1 + total) % total;
+    const currIdx = currentSnapshotIndex;
+    const nextIdx = (currentSnapshotIndex + 1) % total;
 
-    loopItems.forEach(snapshot => {
+    const itemsToDisplay = [
+        { snapshot: filteredSnapshots[prevIdx], position: 'prev' },
+        { snapshot: filteredSnapshots[currIdx], position: 'curr' },
+        { snapshot: filteredSnapshots[nextIdx], position: 'next' }
+    ];
+
+    itemsToDisplay.forEach(({ snapshot, position }) => {
         let imageUrls = snapshot.image ? snapshot.image.split(',').map(url => url.trim()).filter(url => url.length > 0) : ['logo.jpg'];
         if (imageUrls.length === 0) imageUrls = ['logo.jpg'];
 
         const card = document.createElement('div');
-        card.className = 'group relative rounded-3xl overflow-hidden shadow-md bg-white border border-brand-200 w-72 h-72 flex-shrink-0';
+
+        if (position === 'curr') {
+            // Main card: Larger, fully opaque, sharp
+            card.className = 'absolute z-20 w-72 sm:w-96 aspect-square rounded-3xl overflow-hidden shadow-2xl bg-white border-4 border-white transition-all duration-700 ease-in-out transform scale-100 opacity-100 translate-x-0';
+        } else if (position === 'prev') {
+            // Previous card: Smaller, shifted left, dimmed
+            card.className = 'absolute z-10 w-56 sm:w-72 aspect-square rounded-3xl overflow-hidden shadow-md bg-white border-2 border-white/60 transition-all duration-700 ease-in-out transform scale-90 opacity-60 -translate-x-40 sm:-translate-x-56 blur-[0.5px] pointer-events-none';
+        } else {
+            // Next card: Smaller, shifted right, dimmed
+            card.className = 'absolute z-10 w-56 sm:w-72 aspect-square rounded-3xl overflow-hidden shadow-md bg-white border-2 border-white/60 transition-all duration-700 ease-in-out transform scale-90 opacity-60 translate-x-40 sm:translate-x-56 blur-[0.5px] pointer-events-none';
+        }
+
         card.innerHTML = `
-            <img src="${imageUrls[0]}" alt="${snapshot.title}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
-            <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition duration-300 flex items-end p-6 pointer-events-none">
+            <img src="${imageUrls[0]}" alt="${snapshot.title}" class="w-full h-full object-cover">
+            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex items-end p-6">
                 <div>
                     <span class="text-brand-200 text-xs uppercase tracking-wider font-semibold">${snapshot.category}</span>
-                    <p class="text-white font-serif text-lg font-bold">${snapshot.title}</p>
+                    <p class="text-white font-serif text-lg sm:text-xl font-bold">${snapshot.title}</p>
                 </div>
             </div>
         `;
@@ -184,7 +213,27 @@ function renderSnapshots(filter = 'all') {
     });
 }
 
-// Automatic Slideshow Intervals
+// Manual & Automatic Carousel controls (Right-to-Left slide direction)
+window.nextSnapshot = function () {
+    if (filteredSnapshots.length === 0) return;
+    currentSnapshotIndex = (currentSnapshotIndex + 1) % filteredSnapshots.length;
+    renderSnapshotCarousel();
+}
+
+window.prevSnapshot = function () {
+    if (filteredSnapshots.length === 0) return;
+    currentSnapshotIndex = (currentSnapshotIndex - 1 + filteredSnapshots.length) % filteredSnapshots.length;
+    renderSnapshotCarousel();
+}
+
+// Automatically transition snapshots from right to left every 3 seconds
+setInterval(() => {
+    if (filteredSnapshots.length > 1) {
+        window.nextSnapshot();
+    }
+}, 3000);
+
+// Automatic Product Slideshow Intervals
 setInterval(() => {
     document.querySelectorAll('.product-slider-container').forEach(container => {
         const galleryId = container.getAttribute('data-gallery-id');
@@ -192,7 +241,7 @@ setInterval(() => {
     });
 }, 4000);
 
-// Hero Tilted Snapshot Ticker Rotation (Changes photo every exactly 3 seconds)
+// Hero Tilted Snapshot Ticker Rotation (Every 3 seconds)
 setInterval(() => {
     const heroImg = document.getElementById('hero-snapshot-ticker');
     if (heroImg && heroSnapshots.length > 0) {
@@ -205,7 +254,7 @@ setInterval(() => {
     }
 }, 3000);
 
-window.nextHeroSnap = function() {
+window.nextHeroSnap = function () {
     const heroImg = document.getElementById('hero-snapshot-ticker');
     if (heroImg && heroSnapshots.length > 0) {
         heroSnapIdx = (heroSnapIdx + 1) % heroSnapshots.length;
@@ -213,7 +262,7 @@ window.nextHeroSnap = function() {
     }
 }
 
-window.prevHeroSnap = function() {
+window.prevHeroSnap = function () {
     const heroImg = document.getElementById('hero-snapshot-ticker');
     if (heroImg && heroSnapshots.length > 0) {
         heroSnapIdx = (heroSnapIdx - 1 + heroSnapshots.length) % heroSnapshots.length;
@@ -222,7 +271,7 @@ window.prevHeroSnap = function() {
 }
 
 // Product Gallery Control Functions
-window.switchImage = function(galleryId, index) {
+window.switchImage = function (galleryId, index) {
     const imgElement = document.getElementById(`${galleryId}-img`);
     if (!imgElement) return;
     const urls = JSON.parse(imgElement.getAttribute('data-urls'));
@@ -236,20 +285,20 @@ window.switchImage = function(galleryId, index) {
 
         const dots = document.querySelectorAll(`.gallery-dot-${galleryId}`);
         dots.forEach((dot, idx) => {
-            dot.className = idx === index 
-                ? `gallery-dot-${galleryId} w-2.5 h-2.5 rounded-full transition-all bg-white scale-125 shadow-md` 
+            dot.className = idx === index
+                ? `gallery-dot-${galleryId} w-2.5 h-2.5 rounded-full transition-all bg-white scale-125 shadow-md`
                 : `gallery-dot-${galleryId} w-2.5 h-2.5 rounded-full transition-all bg-white/50 hover:bg-white/80`;
         });
     }
 }
-window.nextImage = function(galleryId) {
+window.nextImage = function (galleryId) {
     const imgElement = document.getElementById(`${galleryId}-img`);
     if (!imgElement) return;
     const urls = JSON.parse(imgElement.getAttribute('data-urls'));
     let current = parseInt(imgElement.getAttribute('data-current')) || 0;
     window.switchImage(galleryId, (current + 1) % urls.length);
 }
-window.prevImage = function(galleryId) {
+window.prevImage = function (galleryId) {
     const imgElement = document.getElementById(`${galleryId}-img`);
     if (!imgElement) return;
     const urls = JSON.parse(imgElement.getAttribute('data-urls'));
@@ -382,7 +431,7 @@ snapshotForm.addEventListener('submit', async (e) => {
     }
 });
 
-window.editProduct = function(id) {
+window.editProduct = function (id) {
     const p = products.find(item => item.id === id);
     document.getElementById('edit-product-id').value = p.id;
     document.getElementById('p-name').value = p.name;
@@ -394,13 +443,13 @@ window.editProduct = function(id) {
     document.getElementById('form-title').textContent = `Edit: ${p.name}`;
 }
 
-window.deleteProduct = function(id) {
+window.deleteProduct = function (id) {
     if (confirm("Are you sure you want to delete this bag?")) {
         deleteDoc(doc(db, "bags", id)).then(() => loadProducts());
     }
 }
 
-window.editSnapshot = function(id) {
+window.editSnapshot = function (id) {
     const s = snapshots.find(item => item.id === id);
     document.getElementById('edit-snapshot-id').value = s.id;
     document.getElementById('s-title').value = s.title;
@@ -409,7 +458,7 @@ window.editSnapshot = function(id) {
     document.getElementById('snapshot-form-title').textContent = `Edit Snapshot: ${s.title}`;
 }
 
-window.deleteSnapshot = function(id) {
+window.deleteSnapshot = function (id) {
     if (confirm("Are you sure you want to delete this snapshot?")) {
         deleteDoc(doc(db, "snapshots", id)).then(() => loadSnapshots());
     }
@@ -437,8 +486,8 @@ document.querySelectorAll('.snapshot-filter-btn').forEach(btn => {
         });
         e.target.classList.remove('bg-brand-200/60', 'text-brand-800');
         e.target.classList.add('bg-brand-800', 'text-brand-50');
-        activeSnapshotFilter = e.target.getAttribute('data-filter');
-        renderSnapshots(activeSnapshotFilter);
+        const filter = e.target.getAttribute('data-filter');
+        filterAndRenderSnapshots(filter);
     });
 });
 
@@ -465,7 +514,7 @@ if (tabProductsBtn && tabSnapshotsBtn) {
 }
 
 // Cart & Inquiry Handling
-window.addToCart = function(productId) {
+window.addToCart = function (productId) {
     const product = products.find(p => p.id === productId);
     const existing = cart.find(item => item.id === productId);
     if (existing) existing.quantity += 1;
@@ -503,7 +552,7 @@ function updateCartUI() {
     document.getElementById('cart-subtotal').textContent = `Rs. ${subtotal.toFixed(2)}`;
 }
 
-window.setQuery = function(questionText) {
+window.setQuery = function (questionText) {
     document.getElementById('inquiry-message').value = questionText;
     document.getElementById('inquiry-message').focus();
 }
