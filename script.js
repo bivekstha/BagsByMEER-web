@@ -16,11 +16,14 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 let products = [];
+let snapshots = [];
 let cart = [];
 let activeFilter = 'all';
+let activeSnapshotFilter = 'all';
 
 // DOM Elements
 const productGrid = document.getElementById('product-grid');
+const snapshotGrid = document.getElementById('snapshot-grid');
 const adminLoginModal = document.getElementById('admin-login-modal');
 const adminModal = document.getElementById('admin-modal');
 const adminToggleBtn = document.getElementById('admin-toggle-btn');
@@ -28,9 +31,17 @@ const closeLogin = document.getElementById('close-login');
 const closeAdmin = document.getElementById('close-admin');
 const loginForm = document.getElementById('login-form');
 const productForm = document.getElementById('product-form');
+const snapshotForm = document.getElementById('snapshot-form');
 const adminProductList = document.getElementById('admin-product-list');
+const adminSnapshotList = document.getElementById('admin-snapshot-list');
 
-// Load Products from Firestore Database on Startup
+// Load Data from Firestore Database on Startup
+async function loadData() {
+    await loadProducts();
+    await loadSnapshots();
+}
+
+// Load Products from Firestore
 async function loadProducts() {
     try {
         const querySnapshot = await getDocs(collection(db, "bags"));
@@ -43,6 +54,22 @@ async function loadProducts() {
     } catch (error) {
         console.error("Error loading products:", error);
         productGrid.innerHTML = `<div class="col-span-full text-center py-8 text-red-600">Failed to load database. Check your Firebase credentials in script.js</div>`;
+    }
+}
+
+// Load Snapshots from Firestore
+async function loadSnapshots() {
+    try {
+        const querySnapshot = await getDocs(collection(db, "snapshots"));
+        snapshots = [];
+        querySnapshot.forEach((docSnap) => {
+            snapshots.push({ id: docSnap.id, ...docSnap.data() });
+        });
+        renderSnapshots(activeSnapshotFilter);
+        renderAdminSnapshotList();
+    } catch (error) {
+        console.error("Error loading snapshots:", error);
+        snapshotGrid.innerHTML = `<div class="col-span-full text-center py-8 text-red-600">Failed to load snapshots gallery.</div>`;
     }
 }
 
@@ -59,7 +86,6 @@ function renderProducts(filter = 'all') {
     filtered.forEach(product => {
         const isOutOfStock = product.stock === 'out';
         
-        // Split comma-separated image URLs safely, filtering out empty entries
         let imageUrls = product.image ? product.image.split(',').map(url => url.trim()).filter(url => url.length > 0) : ['logo.jpg'];
         if (imageUrls.length === 0) imageUrls = ['logo.jpg'];
 
@@ -79,7 +105,6 @@ function renderProducts(filter = 'all') {
                     <span class="absolute top-4 left-4 bg-white/90 backdrop-blur-md text-brand-900 text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider">${product.category}</span>
                     ${isOutOfStock ? '<span class="absolute top-4 right-4 bg-red-600 text-white text-xs font-bold px-3 py-1 rounded-full uppercase">Out of Stock</span>' : ''}
                     
-                    <!-- Gallery Navigation Buttons & Dots Overlay -->
                     <div class="absolute bottom-3 inset-x-0 flex items-center justify-between px-4 opacity-90 transition-opacity">
                         <button onclick="window.prevImage('${galleryId}')" class="bg-black/40 hover:bg-black/70 text-white w-7 h-7 rounded-full flex items-center justify-center backdrop-blur-sm text-xs transition">
                             <i class="fa-solid fa-chevron-left"></i>
@@ -125,6 +150,32 @@ function renderProducts(filter = 'all') {
     });
 }
 
+// Render Snapshots Gallery Grid
+function renderSnapshots(filter = 'all') {
+    snapshotGrid.innerHTML = '';
+    const filtered = filter === 'all' ? snapshots : snapshots.filter(s => s.category === filter);
+
+    if (filtered.length === 0) {
+        snapshotGrid.innerHTML = `<div class="col-span-full text-center py-12 text-brand-600 font-light">No snapshots found in this category. Use the Admin panel to add photos!</div>`;
+        return;
+    }
+
+    filtered.forEach(snapshot => {
+        const card = document.createElement('div');
+        card.className = 'group relative rounded-3xl overflow-hidden shadow-md bg-white border border-brand-200 aspect-square';
+        card.innerHTML = `
+            <img src="${snapshot.image}" alt="${snapshot.title}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+            <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition duration-300 flex items-end p-6">
+                <div>
+                    <span class="text-brand-200 text-xs uppercase tracking-wider font-semibold">${snapshot.category}</span>
+                    <p class="text-white font-serif text-lg font-bold">${snapshot.title}</p>
+                </div>
+            </div>
+        `;
+        snapshotGrid.appendChild(card);
+    });
+}
+
 // Automatic Slideshow Interval (Every 4 Seconds)
 setInterval(() => {
     document.querySelectorAll('.product-slider-container').forEach(container => {
@@ -133,7 +184,7 @@ setInterval(() => {
             window.nextImage(galleryId);
         }
     });
-}, 4000); // 4 seconds interval
+}, 4000);
 
 // Interactive Gallery Controller Functions
 window.switchImage = function(galleryId, index) {
@@ -148,7 +199,6 @@ window.switchImage = function(galleryId, index) {
             imgElement.style.opacity = '1';
         }, 150);
 
-        // Update active states for indicator dots
         const dots = document.querySelectorAll(`.gallery-dot-${galleryId}`);
         dots.forEach((dot, idx) => {
             if (idx === index) {
@@ -178,7 +228,7 @@ window.prevImage = function(galleryId) {
     window.switchImage(galleryId, current);
 }
 
-// Render Admin List
+// Render Admin Inventory List
 function renderAdminList() {
     adminProductList.innerHTML = '';
     products.forEach(p => {
@@ -202,6 +252,29 @@ function renderAdminList() {
     });
 }
 
+// Render Admin Snapshots List
+function renderAdminSnapshotList() {
+    adminSnapshotList.innerHTML = '';
+    snapshots.forEach(s => {
+        const item = document.createElement('div');
+        item.className = 'flex items-center justify-between bg-white p-3 rounded-xl border border-brand-200 text-sm';
+        item.innerHTML = `
+            <div class="flex items-center space-x-3">
+                <img src="${s.image}" class="w-10 h-10 object-cover rounded-lg">
+                <div>
+                    <p class="font-bold text-brand-900">${s.title}</p>
+                    <span class="text-xs font-semibold uppercase text-brand-600">${s.category}</span>
+                </div>
+            </div>
+            <div class="space-x-2">
+                <button onclick="window.editSnapshot('${s.id}')" class="px-3 py-1 bg-brand-200 text-brand-900 rounded-lg text-xs font-medium">Edit</button>
+                <button onclick="window.deleteSnapshot('${s.id}')" class="px-3 py-1 bg-red-100 text-red-700 rounded-lg text-xs font-medium">Delete</button>
+            </div>
+        `;
+        adminSnapshotList.appendChild(item);
+    });
+}
+
 // Secure Admin Login Verification
 loginForm.addEventListener('submit', (e) => {
     e.preventDefault();
@@ -215,7 +288,7 @@ loginForm.addEventListener('submit', (e) => {
     }
 });
 
-// Handle Form Submit (Add or Update Item via Firestore Database)
+// Handle Product Form Submit (Add or Update Item)
 productForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const editId = document.getElementById('edit-product-id').value;
@@ -254,6 +327,42 @@ productForm.addEventListener('submit', async (e) => {
     }
 });
 
+// Handle Snapshot Form Submit (Add or Update Snapshot)
+snapshotForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const editId = document.getElementById('edit-snapshot-id').value;
+    const title = document.getElementById('s-title').value;
+    const category = document.getElementById('s-category').value;
+    const image = document.getElementById('s-image').value.trim();
+
+    const saveBtn = document.getElementById('save-snapshot-btn');
+    saveBtn.textContent = 'Saving Snapshot...';
+    saveBtn.disabled = true;
+
+    try {
+        const snapshotData = { title, category, image };
+
+        if (editId) {
+            await updateDoc(doc(db, "snapshots", editId), snapshotData);
+        } else {
+            await addDoc(collection(db, "snapshots"), snapshotData);
+        }
+
+        snapshotForm.reset();
+        document.getElementById('edit-snapshot-id').value = '';
+        document.getElementById('snapshot-form-title').textContent = 'Add New Snapshot Photo';
+        saveBtn.textContent = 'Save Snapshot';
+        saveBtn.disabled = false;
+
+        loadSnapshots();
+    } catch (error) {
+        console.error("Error saving snapshot:", error);
+        alert("Failed to save snapshot.");
+        saveBtn.textContent = 'Save Snapshot';
+        saveBtn.disabled = false;
+    }
+});
+
 // Edit Product Helper
 window.editProduct = function(id) {
     const p = products.find(item => item.id === id);
@@ -274,7 +383,24 @@ window.deleteProduct = function(id) {
     }
 }
 
-// Filter buttons
+// Edit Snapshot Helper
+window.editSnapshot = function(id) {
+    const s = snapshots.find(item => item.id === id);
+    document.getElementById('edit-snapshot-id').value = s.id;
+    document.getElementById('s-title').value = s.title;
+    document.getElementById('s-category').value = s.category;
+    document.getElementById('s-image').value = s.image;
+    document.getElementById('snapshot-form-title').textContent = `Edit Snapshot: ${s.title}`;
+}
+
+// Delete Snapshot Helper
+window.deleteSnapshot = function(id) {
+    if (confirm("Are you sure you want to delete this snapshot?")) {
+        deleteDoc(doc(db, "snapshots", id)).then(() => loadSnapshots());
+    }
+}
+
+// Product Filter buttons
 document.querySelectorAll('.filter-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
         document.querySelectorAll('.filter-btn').forEach(b => {
@@ -287,6 +413,42 @@ document.querySelectorAll('.filter-btn').forEach(btn => {
         renderProducts(activeFilter);
     });
 });
+
+// Snapshot Filter buttons
+document.querySelectorAll('.snapshot-filter-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+        document.querySelectorAll('.snapshot-filter-btn').forEach(b => {
+            b.classList.remove('bg-brand-800', 'text-brand-50');
+            b.classList.add('bg-brand-200/60', 'text-brand-800');
+        });
+        e.target.classList.remove('bg-brand-200/60', 'text-brand-800');
+        e.target.classList.add('bg-brand-800', 'text-brand-50');
+        activeSnapshotFilter = e.target.getAttribute('data-filter');
+        renderSnapshots(activeSnapshotFilter);
+    });
+});
+
+// Admin Tabs Switching
+const tabProductsBtn = document.getElementById('tab-products-btn');
+const tabSnapshotsBtn = document.getElementById('tab-snapshots-btn');
+const adminProductsSection = document.getElementById('admin-products-section');
+const adminSnapshotsSection = document.getElementById('admin-snapshots-section');
+
+if (tabProductsBtn && tabSnapshotsBtn) {
+    tabProductsBtn.addEventListener('click', () => {
+        tabProductsBtn.className = "admin-tab px-4 py-2 rounded-xl text-sm font-bold bg-brand-800 text-white transition";
+        tabSnapshotsBtn.className = "admin-tab px-4 py-2 rounded-xl text-sm font-medium bg-brand-100 text-brand-800 hover:bg-brand-200 transition";
+        adminProductsSection.classList.remove('hidden');
+        adminSnapshotsSection.classList.add('hidden');
+    });
+
+    tabSnapshotsBtn.addEventListener('click', () => {
+        tabSnapshotsBtn.className = "admin-tab px-4 py-2 rounded-xl text-sm font-bold bg-brand-800 text-white transition";
+        tabProductsBtn.className = "admin-tab px-4 py-2 rounded-xl text-sm font-medium bg-brand-100 text-brand-800 hover:bg-brand-200 transition";
+        adminSnapshotsSection.classList.remove('hidden');
+        adminProductsSection.classList.add('hidden');
+    });
+}
 
 // Cart Management
 window.addToCart = function(productId) {
@@ -333,7 +495,7 @@ window.setQuery = function(questionText) {
     document.getElementById('inquiry-message').focus();
 }
 
-// Handle Web3Forms Ajax Submission with Success / Error Feedback States
+// Handle Web3Forms Ajax Submission
 const inquiryForm = document.getElementById('inquiry-form');
 if (inquiryForm) {
     inquiryForm.addEventListener('submit', async function(e) {
@@ -388,15 +550,23 @@ if (inquiryForm) {
 adminToggleBtn.addEventListener('click', () => adminLoginModal.classList.remove('hidden'));
 closeLogin.addEventListener('click', () => adminLoginModal.classList.add('hidden'));
 closeAdmin.addEventListener('click', () => adminModal.classList.add('hidden'));
+
 document.getElementById('reset-form').addEventListener('click', () => {
     productForm.reset();
     document.getElementById('edit-product-id').value = '';
     document.getElementById('form-title').textContent = 'Add New Item';
 });
+
+document.getElementById('reset-snapshot-form').addEventListener('click', () => {
+    snapshotForm.reset();
+    document.getElementById('edit-snapshot-id').value = '';
+    document.getElementById('snapshot-form-title').textContent = 'Add New Snapshot Photo';
+});
+
 document.getElementById('cart-btn').addEventListener('click', () => document.getElementById('cart-drawer').classList.remove('hidden'));
 document.getElementById('close-cart').addEventListener('click', () => document.getElementById('cart-drawer').classList.add('hidden'));
 document.getElementById('mobile-menu-btn').addEventListener('click', () => document.getElementById('mobile-menu').classList.remove('hidden'));
 document.getElementById('close-mobile-menu').addEventListener('click', () => document.getElementById('mobile-menu').classList.add('hidden'));
 
 // Initial Load
-loadProducts();
+loadData();
