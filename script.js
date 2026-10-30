@@ -25,7 +25,6 @@ let activeSnapshotFilter = 'all';
 
 // DOM Elements
 const productGrid = document.getElementById('product-grid');
-const snapshotGrid = document.getElementById('snapshot-grid');
 const adminLoginModal = document.getElementById('admin-login-modal');
 const adminModal = document.getElementById('admin-modal');
 const adminToggleBtn = document.getElementById('admin-toggle-btn');
@@ -77,7 +76,10 @@ async function loadSnapshots() {
         renderAdminSnapshotList();
     } catch (error) {
         console.error("Error loading snapshots:", error);
-        snapshotGrid.innerHTML = `<div class="col-span-full text-center py-8 text-red-600">Failed to load snapshots gallery.</div>`;
+        const marqueeTrack = document.getElementById('snapshot-marquee-track');
+        if (marqueeTrack) {
+            marqueeTrack.innerHTML = `<div class="text-center py-8 text-red-600 w-full">Failed to load snapshots gallery.</div>`;
+        }
     }
 }
 
@@ -148,46 +150,29 @@ function renderProducts(filter = 'all') {
     });
 }
 
-// Render Snapshots Grid
+// Render Snapshots into the Right-to-Left Sliding Marquee Track
 function renderSnapshots(filter = 'all') {
-    snapshotGrid.innerHTML = '';
+    const track = document.getElementById('snapshot-marquee-track');
+    if (!track) return;
+    
+    track.innerHTML = '';
     const filtered = filter === 'all' ? snapshots : snapshots.filter(s => s.category === filter);
 
     if (filtered.length === 0) {
-        snapshotGrid.innerHTML = `<div class="col-span-full text-center py-12 text-brand-600 font-light">No snapshots found in this category. Use the Admin panel to add photos!</div>`;
+        track.innerHTML = `<div class="text-center py-12 text-brand-600 font-light w-full">No snapshots found in this category.</div>`;
         return;
     }
 
-    filtered.forEach(snapshot => {
+    const loopItems = [...filtered, ...filtered];
+
+    loopItems.forEach(snapshot => {
         let imageUrls = snapshot.image ? snapshot.image.split(',').map(url => url.trim()).filter(url => url.length > 0) : ['logo.jpg'];
         if (imageUrls.length === 0) imageUrls = ['logo.jpg'];
 
-        let imageHtml = '';
-        if (imageUrls.length > 1) {
-            const snapGalleryId = `snap-gallery-${snapshot.id}`;
-            let indicatorsHtml = '';
-            imageUrls.forEach((url, idx) => {
-                indicatorsHtml += `<button onclick="window.switchSnapImage('${snapGalleryId}', ${idx})" class="snap-dot-${snapGalleryId} w-2 h-2 rounded-full transition-all ${idx === 0 ? 'bg-white scale-125 shadow-md' : 'bg-white/50 hover:bg-white/80'}"></button>`;
-            });
-
-            imageHtml = `
-                <div class="snap-slider-container relative overflow-hidden w-full h-full group/snap" data-snap-gallery-id="${snapGalleryId}">
-                    <img id="${snapGalleryId}-img" src="${imageUrls[0]}" alt="${snapshot.title}" class="w-full h-full object-cover group-hover:scale-105 transition-all duration-500" data-urls='${JSON.stringify(imageUrls)}' data-current="0">
-                    <div class="absolute bottom-2 inset-x-0 flex items-center justify-between px-3 opacity-90 transition-opacity">
-                        <button onclick="window.prevSnapImage('${snapGalleryId}')" class="bg-black/40 hover:bg-black/70 text-white w-6 h-6 rounded-full flex items-center justify-center backdrop-blur-sm text-[10px] transition"><i class="fa-solid fa-chevron-left"></i></button>
-                        <div class="flex space-x-1 bg-black/30 backdrop-blur-sm px-2 py-0.5 rounded-full">${indicatorsHtml}</div>
-                        <button onclick="window.nextSnapImage('${snapGalleryId}')" class="bg-black/40 hover:bg-black/70 text-white w-6 h-6 rounded-full flex items-center justify-center backdrop-blur-sm text-[10px] transition"><i class="fa-solid fa-chevron-right"></i></button>
-                    </div>
-                </div>
-            `;
-        } else {
-            imageHtml = `<img src="${imageUrls[0]}" alt="${snapshot.title}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">`;
-        }
-
         const card = document.createElement('div');
-        card.className = 'group relative rounded-3xl overflow-hidden shadow-md bg-white border border-brand-200 aspect-square';
+        card.className = 'group relative rounded-3xl overflow-hidden shadow-md bg-white border border-brand-200 w-72 h-72 flex-shrink-0';
         card.innerHTML = `
-            ${imageHtml}
+            <img src="${imageUrls[0]}" alt="${snapshot.title}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
             <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition duration-300 flex items-end p-6 pointer-events-none">
                 <div>
                     <span class="text-brand-200 text-xs uppercase tracking-wider font-semibold">${snapshot.category}</span>
@@ -195,25 +180,19 @@ function renderSnapshots(filter = 'all') {
                 </div>
             </div>
         `;
-        snapshotGrid.appendChild(card);
+        track.appendChild(card);
     });
 }
 
 // Automatic Slideshow Intervals
 setInterval(() => {
-    // Product tickers
     document.querySelectorAll('.product-slider-container').forEach(container => {
         const galleryId = container.getAttribute('data-gallery-id');
         if (galleryId) window.nextImage(galleryId);
     });
-    // Snapshot gallery tickers
-    document.querySelectorAll('.snap-slider-container').forEach(container => {
-        const snapGalleryId = container.getAttribute('data-snap-gallery-id');
-        if (snapGalleryId) window.nextSnapImage(snapGalleryId);
-    });
 }, 4000);
 
-// Hero Tilted Snapshot Ticker Rotation (Every 3 seconds)
+// Hero Tilted Snapshot Ticker Rotation (Changes photo every exactly 3 seconds)
 setInterval(() => {
     const heroImg = document.getElementById('hero-snapshot-ticker');
     if (heroImg && heroSnapshots.length > 0) {
@@ -242,7 +221,7 @@ window.prevHeroSnap = function() {
     }
 }
 
-// Product & Snapshot Control Functions
+// Product Gallery Control Functions
 window.switchImage = function(galleryId, index) {
     const imgElement = document.getElementById(`${galleryId}-img`);
     if (!imgElement) return;
@@ -276,41 +255,6 @@ window.prevImage = function(galleryId) {
     const urls = JSON.parse(imgElement.getAttribute('data-urls'));
     let current = parseInt(imgElement.getAttribute('data-current')) || 0;
     window.switchImage(galleryId, (current - 1 + urls.length) % urls.length);
-}
-
-window.switchSnapImage = function(snapGalleryId, index) {
-    const imgElement = document.getElementById(`${snapGalleryId}-img`);
-    if (!imgElement) return;
-    const urls = JSON.parse(imgElement.getAttribute('data-urls'));
-    if (urls && urls[index]) {
-        imgElement.setAttribute('data-current', index);
-        imgElement.style.opacity = '0.3';
-        setTimeout(() => {
-            imgElement.src = urls[index];
-            imgElement.style.opacity = '1';
-        }, 150);
-
-        const dots = document.querySelectorAll(`.snap-dot-${snapGalleryId}`);
-        dots.forEach((dot, idx) => {
-            dot.className = idx === index 
-                ? `snap-dot-${snapGalleryId} w-2 h-2 rounded-full transition-all bg-white scale-125 shadow-md` 
-                : `snap-dot-${snapGalleryId} w-2 h-2 rounded-full transition-all bg-white/50 hover:bg-white/80`;
-        });
-    }
-}
-window.nextSnapImage = function(snapGalleryId) {
-    const imgElement = document.getElementById(`${snapGalleryId}-img`);
-    if (!imgElement) return;
-    const urls = JSON.parse(imgElement.getAttribute('data-urls'));
-    let current = parseInt(imgElement.getAttribute('data-current')) || 0;
-    window.switchSnapImage(snapGalleryId, (current + 1) % urls.length);
-}
-window.prevSnapImage = function(snapGalleryId) {
-    const imgElement = document.getElementById(`${snapGalleryId}-img`);
-    if (!imgElement) return;
-    const urls = JSON.parse(imgElement.getAttribute('data-urls'));
-    let current = parseInt(imgElement.getAttribute('data-current')) || 0;
-    window.switchSnapImage(snapGalleryId, (current - 1 + urls.length) % urls.length);
 }
 
 // Admin Lists Renderers
