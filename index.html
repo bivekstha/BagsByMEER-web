@@ -69,13 +69,6 @@
         .animate-glow {
             animation: pulseGlow 5s ease-in-out infinite;
         }
-
-        .snapshot-slide {
-            transition: transform 0.85s cubic-bezier(0.22, 1, 0.36, 1),
-                opacity 0.85s cubic-bezier(0.22, 1, 0.36, 1),
-                box-shadow 0.85s cubic-bezier(0.22, 1, 0.36, 1);
-            will-change: transform, opacity;
-        }
     </style>
 </head>
 
@@ -94,11 +87,11 @@
                 <button id="mobile-menu-btn" class="text-brand-800 text-xl focus:outline-none p-2">
                     <i class="fa-solid fa-bars"></i>
                 </button>
+
                 <a href="#home" class="flex items-center space-x-2.5">
                     <div
                         class="relative w-9 h-9 sm:w-10 sm:h-10 rounded-full overflow-hidden border-2 border-brand-600 shadow-md">
-                        <img src="logo.jpg" alt="BagsByMeer Logo" class="w-full h-full object-cover"
-                            onerror="this.src='https://images.unsplash.com/photo-1544816155-12df9643f363?w=600'">
+                        <img src="logo.jpg" alt="BagsByMeer Logo" class="w-full h-full object-cover">
                     </div>
                     <span class="font-serif text-2xl sm:text-3xl font-bold tracking-tight text-brand-800">
                         Bags<span class="italic font-normal text-brand-600">By</span>Meer
@@ -163,6 +156,12 @@
     <!-- Hero Section -->
     <section id="home"
         class="relative overflow-hidden py-10 lg:py-14 bg-gradient-to-b from-brand-100/60 via-brand-50 to-brand-50">
+        <div
+            class="absolute -top-32 -right-32 w-[500px] h-[500px] bg-amber-200/30 rounded-full blur-3xl pointer-events-none animate-glow">
+        </div>
+        <div class="absolute top-1/3 -left-32 w-96 h-96 bg-brand-200/50 rounded-full blur-3xl pointer-events-none">
+        </div>
+
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
                 <div class="lg:col-span-6 space-y-5 text-center lg:text-left">
@@ -171,13 +170,17 @@
                         <span class="w-2 h-2 rounded-full bg-amber-600 animate-ping"></span>
                         <span>Handcrafted Luxury Bags of Nepal</span>
                     </div>
-                    <h1 class="font-serif text-4xl sm:text-6xl font-bold tracking-tight text-brand-900 leading-[1.08]">
+
+                    <h1
+                        class="font-serif text-4xl sm:text-6xl lg:text-6xl font-bold tracking-tight text-brand-900 leading-[1.08]">
                         Stitched in Nepal, <br><span class="italic font-normal text-brand-600">carried</span> worldwide.
                     </h1>
+
                     <p class="text-brand-700 text-base sm:text-lg max-w-xl mx-auto lg:mx-0 font-light leading-relaxed">
                         Experience unmatched artisanal elegance. Every bag is meticulously handmade using sustainable
                         fabrics, traditional weaving passion, and modern durability.
                     </p>
+
                     <div class="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-2">
                         <a href="#shop"
                             class="w-full sm:w-auto bg-brand-800 text-brand-50 px-8 py-4 rounded-full font-medium hover:bg-brand-700 transition shadow-xl shadow-brand-800/20 text-center flex items-center justify-center gap-2 group">
@@ -187,22 +190,75 @@
                     </div>
                 </div>
 
+                <!-- Right Side: Larger Constant Logo + Larger Tilted Snapshot Slideshow Card -->
                 <div class="lg:col-span-6 relative flex items-center justify-center gap-4 sm:gap-6">
                     <div
                         class="relative w-52 sm:w-60 rounded-3xl overflow-hidden shadow-2xl aspect-[4/5] bg-brand-200 border-4 border-white flex-shrink-0 z-10">
-                        <img src="logo.jpg" alt="BagsByMeer Constant Logo" class="w-full h-full object-cover"
-                            onerror="this.src='https://images.unsplash.com/photo-1544816155-12df9643f363?w=600'">
+                        <img src="logo.jpg" alt="BagsByMeer Constant Logo" class="w-full h-full object-cover">
+                    </div>
+
+                    <div
+                        class="relative w-48 sm:w-56 rounded-2xl overflow-hidden shadow-2xl aspect-[4/5] bg-brand-100 border-2 border-white transform rotate-6 hover:rotate-0 transition duration-500 flex-shrink-0 group/snap">
+                        <img id="hero-snapshot-ticker"
+                            src="https://i.ibb.co/HL15342k/Whats-App-Image-2026-10-29-at-22-29-29.jpg"
+                            alt="Snapshot Preview" class="w-full h-full object-cover transition-opacity duration-300">
+                        <div
+                            class="absolute bottom-3 inset-x-0 flex items-center justify-between px-3 opacity-0 group-hover/snap:opacity-100 transition-opacity">
+                            <button onclick="window.prevHeroSnap()"
+                                class="bg-black/60 text-white w-7 h-7 rounded-full flex items-center justify-center text-xs backdrop-blur-sm"><i
+                                    class="fa-solid fa-chevron-left"></i></button>
+                            <button onclick="window.nextHeroSnap()"
+                                class="bg-black/60 text-white w-7 h-7 rounded-full flex items-center justify-center text-xs backdrop-blur-sm"><i
+                                    class="fa-solid fa-chevron-right"></i></button>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
+    <!-- Artisanal Value Feature Bar -->
+    <div class="bg-brand-200/40 border-y border-brand-200/60 py-6">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 sm:grid-cols-3 gap-6 text-center">
+            <div class="flex items-center justify-center space-x-3">
+                <div
+                    class="w-10 h-10 rounded-full bg-brand-800 text-white flex items-center justify-center text-lg shadow-sm">
+                    <i class="fa-solid fa-hands-holding"></i>
+                </div>
+                <div class="text-left">
+                    <h4 class="font-bold text-sm text-brand-900">100% Handcrafted</h4>
+                    <p class="text-xs text-brand-700 font-light">Carefully stitched by local artisans</p>
+                </div>
+            </div>
+            <div class="flex items-center justify-center space-x-3">
+                <div
+                    class="w-10 h-10 rounded-full bg-brand-800 text-white flex items-center justify-center text-lg shadow-sm">
+                    <i class="fa-solid fa-seedling"></i>
+                </div>
+                <div class="text-left">
+                    <h4 class="font-bold text-sm text-brand-900">Sustainable Fabrics</h4>
+                    <p class="text-xs text-brand-700 font-light">Eco-friendly materials & textiles</p>
+                </div>
+            </div>
+            <div class="flex items-center justify-center space-x-3">
+                <div
+                    class="w-10 h-10 rounded-full bg-brand-800 text-white flex items-center justify-center text-lg shadow-sm">
+                    <i class="fa-solid fa-truck-fast"></i>
+                </div>
+                <div class="text-left">
+                    <h4 class="font-bold text-sm text-brand-900">Nepal-Wide Delivery</h4>
+                    <p class="text-xs text-brand-700 font-light">Fast & safe delivery to your doorstep</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Shop Section -->
     <section id="shop" class="py-20 lg:py-28 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center max-w-2xl mx-auto mb-12">
             <span class="text-brand-600 font-semibold tracking-wider text-xs uppercase">Curated Catalog</span>
             <h2 class="font-serif text-3xl sm:text-5xl font-bold text-brand-900 mt-2 mb-4">Handcrafted Masterpieces</h2>
+            <p class="text-brand-700 font-light">Managed live via your database inventory.</p>
         </div>
 
         <div class="flex flex-wrap justify-center gap-3 mb-12">
@@ -225,14 +281,17 @@
         </div>
     </section>
 
-    <!-- SNAPSHOTS SECTION -->
+    <!-- SNAPSHOTS SECTION WITH SMOOTH RIGHT-TO-LEFT CAROUSEL ANIMATION -->
     <section id="snapshots" class="py-20 bg-brand-100/40 border-t border-brand-200 overflow-hidden">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-12">
             <div class="text-center max-w-2xl mx-auto mb-8">
                 <span class="text-brand-600 font-semibold tracking-wider text-xs uppercase">Moments &
                     Craftsmanship</span>
                 <h2 class="font-serif text-3xl sm:text-5xl font-bold text-brand-900 mt-2 mb-4">BagsByMeer Snapshots</h2>
+                <p class="text-brand-700 font-light">Glimpses of our workshop, customer moments, and raw textures.</p>
             </div>
+
+            <!-- Snapshot Filters -->
             <div class="flex flex-wrap justify-center gap-3">
                 <button
                     class="snapshot-filter-btn active-snap-filter bg-brand-800 text-brand-50 px-6 py-2.5 rounded-full text-sm font-medium transition shadow-sm"
@@ -249,93 +308,172 @@
             </div>
         </div>
 
-        <div
-            class="relative w-full max-w-6xl mx-auto px-4 py-8 flex items-center justify-center min-h-[420px] overflow-hidden">
-            <div id="snapshot-carousel-track" class="relative w-full flex items-center justify-center min-h-[380px]">
+        <!-- Smooth 3D Coverflow Carousel Container -->
+        <div class="relative w-full max-w-6xl mx-auto px-4 py-8 flex items-center justify-center min-h-[400px]">
+            <div id="snapshot-carousel-track"
+                class="relative w-full flex items-center justify-center transition-all duration-700 ease-in-out">
                 <div class="text-center py-12 text-brand-600">Loading snapshots carousel...</div>
             </div>
-            <button onclick="window.prevSnapshot()" aria-label="Previous snapshot"
-                class="absolute left-4 sm:left-8 z-30 bg-white/90 hover:bg-white text-brand-900 w-12 h-12 rounded-full shadow-xl flex items-center justify-center transition-all">
+
+            <!-- Manual Controls for Carousel -->
+            <button onclick="window.prevSnapshot()"
+                class="absolute left-4 sm:left-12 z-20 bg-white/80 hover:bg-white text-brand-900 w-12 h-12 rounded-full shadow-lg flex items-center justify-center transition">
                 <i class="fa-solid fa-chevron-left text-lg"></i>
             </button>
-            <button onclick="window.nextSnapshot()" aria-label="Next snapshot"
-                class="absolute right-4 sm:right-8 z-30 bg-white/90 hover:bg-white text-brand-900 w-12 h-12 rounded-full shadow-xl flex items-center justify-center transition-all">
+            <button onclick="window.nextSnapshot()"
+                class="absolute right-4 sm:right-12 z-20 bg-white/80 hover:bg-white text-brand-900 w-12 h-12 rounded-full shadow-lg flex items-center justify-center transition">
                 <i class="fa-solid fa-chevron-right text-lg"></i>
             </button>
         </div>
     </section>
 
-    <!-- ADMIN MODAL -->
-    <div id="admin-modal"
-        class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden items-center justify-center p-4 overflow-y-auto">
-        <div class="bg-white rounded-3xl max-w-4xl w-full p-8 shadow-2xl relative max-h-[90vh] overflow-y-auto">
-            <div class="flex justify-between items-center pb-4 border-b border-brand-200 mb-6">
-                <h3 class="font-serif text-2xl font-bold text-brand-900"><i class="fa-solid fa-database mr-2"></i>
-                    Management Dashboard</h3>
-                <button id="close-admin" class="text-brand-900 text-xl font-bold"><i
-                        class="fa-solid fa-xmark"></i></button>
-            </div>
-
-            <!-- Tab 1: Products -->
-            <div id="admin-products-section" class="admin-section">
-                <form id="product-form" class="bg-brand-50 p-6 rounded-2xl border border-brand-200 mb-8 space-y-4">
-                    <input type="hidden" id="edit-product-id">
-                    <h4 id="form-title" class="font-bold text-brand-900 text-lg">Add New Item</h4>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-xs font-semibold uppercase text-brand-700 mb-1">Bag Name</label>
-                            <input type="text" id="p-name" required
-                                class="w-full bg-white border border-brand-200 rounded-xl px-4 py-2 text-sm">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-semibold uppercase text-brand-700 mb-1">Category</label>
-                            <select id="p-category"
-                                class="w-full bg-white border border-brand-200 rounded-xl px-4 py-2 text-sm">
-                                <option value="tote">Tote</option>
-                                <option value="crossbody">Crossbody</option>
-                                <option value="backpack">Backpack</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-semibold uppercase text-brand-700 mb-1">Price (Rs.)</label>
-                            <input type="number" step="0.01" id="p-price" required
-                                class="w-full bg-white border border-brand-200 rounded-xl px-4 py-2 text-sm">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-semibold uppercase text-brand-700 mb-1">Stock
-                                Status</label>
-                            <select id="p-stock"
-                                class="w-full bg-white border border-brand-200 rounded-xl px-4 py-2 text-sm">
-                                <option value="in">In Stock</option>
-                                <option value="out">Out of Stock</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold uppercase text-brand-700 mb-1">Image URL(s) - Comma
-                            Separated</label>
-                        <input type="text" id="p-image" placeholder="https://img1.jpg, https://img2.jpg"
-                            class="w-full bg-white border border-brand-200 rounded-xl px-4 py-2 text-sm mb-2">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold uppercase text-brand-700 mb-1">Description</label>
-                        <textarea id="p-desc" rows="2"
-                            class="w-full bg-white border border-brand-200 rounded-xl px-4 py-2 text-sm"></textarea>
-                    </div>
-                    <div class="flex justify-end space-x-3 pt-2">
-                        <button type="button" id="reset-form"
-                            class="px-4 py-2 bg-gray-200 text-gray-700 rounded-xl text-sm font-medium">Cancel</button>
-                        <button type="submit" id="save-product-btn"
-                            class="px-6 py-2 bg-brand-800 text-white rounded-xl text-sm font-medium hover:bg-brand-700">Save
-                            Item to Database</button>
-                    </div>
-                </form>
-                <div id="admin-product-list" class="space-y-3 max-h-60 overflow-y-auto"></div>
+    <!-- Our Story Section -->
+    <section id="story" class="py-20 bg-brand-50 border-y border-brand-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                <div class="lg:col-span-6 grid grid-cols-2 gap-4">
+                    <img src="log2.jpg" alt="Crafting process" class="rounded-2xl shadow-md w-full h-64 object-cover">
+                    <img src="logo1.jpg" alt="Bag details" class="rounded-2xl shadow-md w-full h-64 object-cover mt-8">
+                </div>
+                <div class="lg:col-span-6 space-y-6">
+                    <span class="text-brand-600 font-semibold tracking-wider text-xs uppercase">Behind The Seams</span>
+                    <h2 class="font-serif text-3xl sm:text-4xl font-bold text-brand-900">Crafted with Passion in Nepal
+                    </h2>
+                    <p class="text-brand-700 font-light leading-relaxed">
+                        Behind every stitch at BagsByMeer lies a mother’s labor of love. What began as a heartfelt hobby
+                        in Kathmandu, Nepal, has blossomed into an inspiring journey as Meera Shrestha dedicates herself
+                        to growing her craft, honing her talent, and supporting her family through the beauty of
+                        handmade bags.
+                    </p>
+                </div>
             </div>
         </div>
-    </div>
+    </section>
 
-    <!-- Admin Login Modal -->
+    <!-- Contact & Social Section -->
+    <section id="contact" class="py-20 bg-white border-y border-brand-200">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-8">
+            <span class="text-brand-600 font-semibold tracking-wider text-xs uppercase">Get in Touch</span>
+            <h2 class="font-serif text-3xl sm:text-4xl font-bold text-brand-900">Connect with BagsByMeer</h2>
+            <div class="flex flex-wrap justify-center gap-6 pt-2">
+                <a href="https://wa.me/9779861585576?text=Hello%2C%20I%20would%20like%20to%20place%20an%20order%20or%20ask%20about%20availability."
+                    target="_blank"
+                    class="flex items-center space-x-3 bg-brand-50 px-6 py-4 rounded-2xl shadow-sm border border-brand-200 hover:shadow-md transition text-brand-900 font-medium">
+                    <i class="fa-brands fa-whatsapp text-green-600 text-xl"></i>
+                    <span>WhatsApp: +977 9861585576</span>
+                </a>
+                <a href="https://www.instagram.com/bagsbymeer?obrf=aXFwNG8xcjF1cHl4" target="_blank"
+                    class="flex items-center space-x-3 bg-brand-50 px-6 py-4 rounded-2xl shadow-sm border border-brand-200 hover:shadow-md transition text-brand-900 font-medium">
+                    <i class="fa-brands fa-instagram text-pink-600 text-lg"></i>
+                    <span>Instagram (@bagsbymeer)</span>
+                </a>
+                <a href="https://www.tiktok.com/@bagsbymeer" target="_blank"
+                    class="flex items-center space-x-3 bg-brand-50 px-6 py-4 rounded-2xl shadow-sm border border-brand-200 hover:shadow-md transition text-brand-900 font-medium">
+                    <i class="fa-brands fa-tiktok text-black text-lg"></i>
+                    <span>TikTok (@bagsbymeer)</span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Quick Inquiry & Message Section -->
+    <section id="inquiry" class="py-16 bg-brand-100/40 border-t border-brand-200">
+        <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-8">
+                <span class="text-brand-600 font-semibold tracking-wider text-xs uppercase">Got Questions?</span>
+                <h2 class="font-serif text-3xl sm:text-b font-bold text-brand-900 mt-1">Ask Us Anything</h2>
+                <p class="text-brand-700 text-sm font-light mt-2">Select a common question below or send a message
+                    straight to our inbox.</p>
+            </div>
+
+            <div class="flex flex-wrap justify-center gap-2 mb-6">
+                <button type="button" onclick="setQuery('Do you take custom bag designs and sizes?')"
+                    class="bg-white border border-brand-200 text-brand-800 text-xs px-4 py-2 rounded-full hover:bg-brand-800 hover:text-white transition shadow-sm">
+                    ✨ Custom bag designs?
+                </button>
+                <button type="button" onclick="setQuery('What is the delivery time within Nepal?')"
+                    class="bg-white border border-brand-200 text-brand-800 text-xs px-4 py-2 rounded-full hover:bg-brand-800 hover:text-white transition shadow-sm">
+                    🚚 Delivery time in Nepal?
+                </button>
+                <button type="button" onclick="setQuery('What payment methods do you accept?')"
+                    class="bg-white border border-brand-200 text-brand-800 text-xs px-4 py-2 rounded-full hover:bg-brand-800 hover:text-white transition shadow-sm">
+                    💳 Payment methods?
+                </button>
+            </div>
+
+            <form id="inquiry-form" class="bg-white p-6 sm:p-8 rounded-3xl border border-brand-200 shadow-sm space-y-4">
+                <input type="hidden" name="access_key" value="d11a18f8-5ce3-4fd2-97b3-e9c0da0855d0">
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold uppercase text-brand-700 mb-1">Your Name</label>
+                        <input type="text" name="name" id="inquiry-name" required placeholder="Enter your name..."
+                            class="w-full bg-brand-50 border border-brand-200 rounded-xl px-4 py-2.5 text-sm focus:outline-brand-600">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold uppercase text-brand-700 mb-1">Phone or Email</label>
+                        <input type="text" name="contact" id="inquiry-contact" required
+                            placeholder="Phone number / Email..."
+                            class="w-full bg-brand-50 border border-brand-200 rounded-xl px-4 py-2.5 text-sm focus:outline-brand-600">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold uppercase text-brand-700 mb-1">Your Message /
+                        Query</label>
+                    <textarea name="message" id="inquiry-message" rows="3" required
+                        placeholder="Type your question here..."
+                        class="w-full bg-brand-50 border border-brand-200 rounded-xl px-4 py-2.5 text-sm focus:outline-brand-600"></textarea>
+                </div>
+
+                <div id="form-result" class="text-sm font-medium text-center hidden"></div>
+
+                <button type="submit" id="inquiry-submit-btn"
+                    class="w-full bg-brand-800 text-white py-3 rounded-xl font-medium hover:bg-brand-700 transition shadow-md">
+                    Send Private Message
+                </button>
+            </form>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-brand-900 text-brand-100 pt-16 pb-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-3 gap-10 mb-12">
+            <div class="space-y-4">
+                <span class="font-serif text-2xl font-bold text-white">Bags<span
+                        class="italic font-normal text-brand-200">By</span>Meer</span>
+                <p class="text-brand-200/80 text-sm font-light">
+                    Handcrafted with love and perfection in Kathmandu, Nepal.
+                </p>
+            </div>
+            <div>
+                <h4 class="font-semibold text-white mb-4 text-sm tracking-wider uppercase">Contact Info</h4>
+                <ul class="space-y-2 text-sm text-brand-200/80">
+                    <li><i class="fa-solid fa-location-dot mr-2"></i> Kathmandu, Nepal</li>
+                    <li>
+                        <a href="https://wa.me/9779861585576?text=Hi%2C%20I%20have%20a%20question%20regarding%20BagsByMeer."
+                            target="_blank" class="hover:text-white transition flex items-center gap-1.5">
+                            <i class="fa-brands fa-whatsapp text-green-500"></i> +977 9861585576
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="font-semibold text-white mb-4 text-sm tracking-wider uppercase">Follow Us</h4>
+                <div class="flex space-x-4 text-xl">
+                    <a href="https://www.instagram.com/bagsbymeer?obrf=aXFwNG8xcjF1cHl4" target="_blank"
+                        class="hover:text-white transition"><i class="fa-brands fa-instagram"></i></a>
+                    <a href="https://www.tiktok.com/@bagsbymeer" target="_blank" class="hover:text-white transition"><i
+                            class="fa-brands fa-tiktok"></i></a>
+                </div>
+            </div>
+        </div>
+        <div
+            class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 border-t border-brand-800 text-center text-xs text-brand-300">
+            &copy; 2026 BagsByMeer. All rights reserved.
+        </div>
+    </footer>
+
+    <!-- SECURE ADMIN LOGIN MODAL -->
     <div id="admin-login-modal"
         class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden items-center justify-center p-4">
         <div class="bg-white rounded-3xl max-w-md w-full p-8 shadow-2xl relative">
@@ -350,12 +488,136 @@
                     <label class="block text-xs font-semibold uppercase text-brand-700 mb-1">Enter Admin Password /
                         PIN</label>
                     <input type="password" id="admin-pin-input" required placeholder="Enter passcode..."
-                        class="w-full bg-brand-50 border border-brand-200 rounded-xl px-4 py-3 text-sm">
+                        class="w-full bg-brand-50 border border-brand-200 rounded-xl px-4 py-3 text-sm focus:outline-brand-600">
                 </div>
                 <button type="submit"
-                    class="w-full bg-brand-800 text-white py-3 rounded-xl font-medium hover:bg-brand-700 transition">Verify
-                    & Enter Dashboard</button>
+                    class="w-full bg-brand-800 text-white py-3 rounded-xl font-medium hover:bg-brand-700 transition shadow-md">
+                    Verify & Enter Dashboard
+                </button>
             </form>
+        </div>
+    </div>
+
+    <!-- ADMIN MODAL DASHBOARD WITH TABS -->
+    <div id="admin-modal"
+        class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-white rounded-3xl max-w-4xl w-full p-8 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center pb-4 border-b border-brand-200 mb-6">
+                <h3 class="font-serif text-2xl font-bold text-brand-900"><i class="fa-solid fa-database mr-2"></i>
+                    BagsByMeer Management Dashboard</h3>
+                <button id="close-admin" class="text-brand-900 text-xl font-bold"><i
+                        class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <!-- Tabs -->
+            <div class="flex space-x-4 mb-6 border-b border-brand-200 pb-2">
+                <button id="tab-products-btn"
+                    class="admin-tab px-4 py-2 rounded-xl text-sm font-bold bg-brand-800 text-white transition">Manage
+                    Inventory</button>
+                <button id="tab-snapshots-btn"
+                    class="admin-tab px-4 py-2 rounded-xl text-sm font-medium bg-brand-100 text-brand-800 hover:bg-brand-200 transition">Manage
+                    Snapshots</button>
+            </div>
+
+            <!-- Tab 1: Products -->
+            <div id="admin-products-section" class="admin-section">
+                <form id="product-form" class="bg-brand-50 p-6 rounded-2xl border border-brand-200 mb-8 space-y-4">
+                    <input type="hidden" id="edit-product-id">
+                    <h4 id="form-title" class="font-bold text-brand-900 text-lg">Add New Item</h4>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold uppercase text-brand-700 mb-1">Bag Name</label>
+                            <input type="text" id="p-name" required
+                                class="w-full bg-white border border-brand-200 rounded-xl px-4 py-2 text-sm focus:outline-brand-600">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold uppercase text-brand-700 mb-1">Category</label>
+                            <select id="p-category"
+                                class="w-full bg-white border border-brand-200 rounded-xl px-4 py-2 text-sm focus:outline-brand-600">
+                                <option value="tote">Tote</option>
+                                <option value="crossbody">Crossbody</option>
+                                <option value="backpack">Backpack</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold uppercase text-brand-700 mb-1">Price (Rs.)</label>
+                            <input type="number" step="0.01" id="p-price" required
+                                class="w-full bg-white border border-brand-200 rounded-xl px-4 py-2 text-sm focus:outline-brand-600">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold uppercase text-brand-700 mb-1">Stock
+                                Status</label>
+                            <select id="p-stock"
+                                class="w-full bg-white border border-brand-200 rounded-xl px-4 py-2 text-sm focus:outline-brand-600">
+                                <option value="in">In Stock</option>
+                                <option value="out">Out of Stock</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold uppercase text-brand-700 mb-1">Image URLs (Comma
+                            separated for multiple images)</label>
+                        <input type="text" id="p-image" placeholder="https://img1.jpg, https://img2.jpg"
+                            class="w-full bg-white border border-brand-200 rounded-xl px-4 py-2 text-sm focus:outline-brand-600 mb-2">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold uppercase text-brand-700 mb-1">Description</label>
+                        <textarea id="p-desc" rows="2"
+                            class="w-full bg-white border border-brand-200 rounded-xl px-4 py-2 text-sm focus:outline-brand-600"></textarea>
+                    </div>
+                    <div class="flex justify-end space-x-3 pt-2">
+                        <button type="button" id="reset-form"
+                            class="px-4 py-2 bg-gray-200 text-gray-700 rounded-xl text-sm font-medium">Cancel</button>
+                        <button type="submit" id="save-product-btn"
+                            class="px-6 py-2 bg-brand-800 text-white rounded-xl text-sm font-medium hover:bg-brand-700">Save
+                            Item to Database</button>
+                    </div>
+                </form>
+
+                <h4 class="font-bold text-brand-900 text-lg mb-4">Current Database Inventory</h4>
+                <div id="admin-product-list" class="space-y-3 max-h-60 overflow-y-auto"></div>
+            </div>
+
+            <!-- Tab 2: Snapshots -->
+            <div id="admin-snapshots-section" class="admin-section hidden">
+                <form id="snapshot-form" class="bg-brand-50 p-6 rounded-2xl border border-brand-200 mb-8 space-y-4">
+                    <input type="hidden" id="edit-snapshot-id">
+                    <h4 id="snapshot-form-title" class="font-bold text-brand-900 text-lg">Add New Snapshot Photo(s)</h4>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold uppercase text-brand-700 mb-1">Photo Title /
+                                Caption</label>
+                            <input type="text" id="s-title" required placeholder="e.g. Workshop stitching moment"
+                                class="w-full bg-white border border-brand-200 rounded-xl px-4 py-2 text-sm focus:outline-brand-600">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold uppercase text-brand-700 mb-1">Category</label>
+                            <select id="s-category"
+                                class="w-full bg-white border border-brand-200 rounded-xl px-4 py-2 text-sm focus:outline-brand-600">
+                                <option value="workshop">Workshop</option>
+                                <option value="customers">Customer Styles</option>
+                                <option value="details">Close-up Details</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold uppercase text-brand-700 mb-1">Image URL(s) - Comma
+                            separated for multiple photos</label>
+                        <input type="text" id="s-image" required placeholder="https://img1.jpg, https://img2.jpg..."
+                            class="w-full bg-white border border-brand-200 rounded-xl px-4 py-2 text-sm focus:outline-brand-600">
+                    </div>
+                    <div class="flex justify-end space-x-3 pt-2">
+                        <button type="button" id="reset-snapshot-form"
+                            class="px-4 py-2 bg-gray-200 text-gray-700 rounded-xl text-sm font-medium">Cancel</button>
+                        <button type="submit" id="save-snapshot-btn"
+                            class="px-6 py-2 bg-brand-800 text-white rounded-xl text-sm font-medium hover:bg-brand-700">Save
+                            Snapshot</button>
+                    </div>
+                </form>
+
+                <h4 class="font-bold text-brand-900 text-lg mb-4">Current Snapshots in Database</h4>
+                <div id="admin-snapshot-list" class="space-y-3 max-h-60 overflow-y-auto"></div>
+            </div>
         </div>
     </div>
 
@@ -376,13 +638,28 @@
                     <span id="cart-subtotal">Rs. 0.00</span>
                 </div>
                 <button onclick="alert('Proceeding to checkout!');"
-                    class="w-full bg-brand-800 text-white py-3.5 rounded-xl font-medium hover:bg-brand-700 transition">Proceed
-                    to Checkout</button>
+                    class="w-full bg-brand-800 text-white py-3.5 rounded-xl font-medium hover:bg-brand-700 transition">
+                    Proceed to Checkout
+                </button>
             </div>
         </div>
     </div>
 
-    <script type="module" src="script.js?v=5.0"></script>
+    <!-- Floating Sticky WhatsApp Button -->
+    <a href="https://wa.me/9779861585576?text=Hi%2C%20I%20would%20like%20to%20inquire%20about%20your%20handcrafted%20bags!"
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Chat on WhatsApp"
+        class="fixed bottom-6 right-6 z-50 bg-[#25D366] text-white w-14 h-14 rounded-full shadow-2xl flex items-center justify-center text-3xl hover:bg-[#20ba5a] hover:scale-110 active:scale-95 transition-all duration-300 group">
+        <i class="fa-brands fa-whatsapp"></i>
+        <!-- Tooltip Label on Hover -->
+        <span class="absolute right-16 bg-brand-900 text-white text-xs font-medium px-3 py-1.5 rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none shadow-md">
+            Chat with us
+        </span>
+    </a>
+
+    <!-- Script File Link -->
+    <script type="module" src="script.js"></script>
 </body>
 
 </html>
