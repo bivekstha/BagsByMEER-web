@@ -76,12 +76,6 @@ async function loadSnapshots() {
         });
         filterAndRenderSnapshots(activeSnapshotFilter);
         renderAdminSnapshotList();
-
-        // Update hero ticker initial image if available
-        const heroImg = document.getElementById('hero-snapshot-ticker');
-        if (heroImg && heroSnapshots.length > 0) {
-            heroImg.src = heroSnapshots[0];
-        }
     } catch (error) {
         console.error("Error loading snapshots:", error);
         const track = document.getElementById('snapshot-carousel-track');
@@ -103,8 +97,8 @@ function renderProducts(filter = 'all') {
 
     filtered.forEach(product => {
         const isOutOfStock = product.stock === 'out';
-        let imageUrls = product.image ? product.image.split(',').map(url => url.trim()).filter(url => url.length > 0) : [];
-        if (imageUrls.length === 0) imageUrls = ['https://images.unsplash.com/photo-1544816155-12df9643f363?w=600'];
+        let imageUrls = product.image ? product.image.split(',').map(url => url.trim()).filter(url => url.length > 0) : ['logo.jpg'];
+        if (imageUrls.length === 0) imageUrls = ['logo.jpg'];
 
         let imageHtml = '';
         if (imageUrls.length > 1) {
@@ -116,7 +110,7 @@ function renderProducts(filter = 'all') {
 
             imageHtml = `
                 <div class="product-slider-container relative overflow-hidden aspect-[4/3] bg-brand-100 group/gallery" data-gallery-id="${galleryId}">
-                    <img id="${galleryId}-img" src="${imageUrls[0]}" alt="${product.name}" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1544816155-12df9643f363?w=600';" class="w-full h-full object-cover group-hover:scale-105 transition-all duration-500 ${isOutOfStock ? 'opacity-50 grayscale' : ''}" data-urls='${JSON.stringify(imageUrls)}' data-current="0">
+                    <img id="${galleryId}-img" src="${imageUrls[0]}" alt="${product.name}" class="w-full h-full object-cover group-hover:scale-105 transition-all duration-500 ${isOutOfStock ? 'opacity-50 grayscale' : ''}" data-urls='${JSON.stringify(imageUrls)}' data-current="0">
                     <span class="absolute top-4 left-4 bg-white/90 backdrop-blur-md text-brand-900 text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider">${product.category}</span>
                     ${isOutOfStock ? '<span class="absolute top-4 right-4 bg-red-600 text-white text-xs font-bold px-3 py-1 rounded-full uppercase">Out of Stock</span>' : ''}
                     <div class="absolute bottom-3 inset-x-0 flex items-center justify-between px-4 opacity-90 transition-opacity">
@@ -129,7 +123,7 @@ function renderProducts(filter = 'all') {
         } else {
             imageHtml = `
                 <div class="relative overflow-hidden aspect-[4/3] bg-brand-100">
-                    <img src="${imageUrls[0]}" alt="${product.name}" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1544816155-12df9643f363?w=600';" class="w-full h-full object-cover group-hover:scale-105 transition duration-500 ${isOutOfStock ? 'opacity-50 grayscale' : ''}">
+                    <img src="${imageUrls[0]}" alt="${product.name}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500 ${isOutOfStock ? 'opacity-50 grayscale' : ''}">
                     <span class="absolute top-4 left-4 bg-white/90 backdrop-blur-md text-brand-900 text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider">${product.category}</span>
                     ${isOutOfStock ? '<span class="absolute top-4 right-4 bg-red-600 text-white text-xs font-bold px-3 py-1 rounded-full uppercase">Out of Stock</span>' : ''}
                 </div>
@@ -143,7 +137,7 @@ function renderProducts(filter = 'all') {
             <div class="p-6 flex flex-col flex-grow justify-between">
                 <div>
                     <h3 class="font-serif text-xl font-bold text-brand-900">${product.name}</h3>
-                    <p class="text-brand-700 text-sm font-light mt-1 line-clamp-2">${product.description || ''}</p>
+                    <p class="text-brand-700 text-sm font-light mt-1 line-clamp-2">${product.description}</p>
                 </div>
                 <div class="flex items-center justify-between mt-6 pt-4 border-t border-brand-100">
                     <span class="text-lg font-bold text-brand-900">Rs. ${Number(product.price).toFixed(2)}</span>
@@ -156,21 +150,17 @@ function renderProducts(filter = 'all') {
         `;
         productGrid.appendChild(card);
     });
-};
+}
 
-// Snapshot Carousel Logic
-let snapshotTrackInitialized = false;
-
+// Filter and render snapshots for the 3D coverflow carousel
 function filterAndRenderSnapshots(filter) {
     activeSnapshotFilter = filter;
     filteredSnapshots = filter === 'all' ? snapshots : snapshots.filter(s => s.category === filter);
     currentSnapshotIndex = 0;
-    snapshotTrackInitialized = false;
-    setupSnapshotCarouselDOM();
-    updateSnapshotPositions();
+    renderSnapshotCarousel();
 }
 
-function setupSnapshotCarouselDOM() {
+function renderSnapshotCarousel() {
     const track = document.getElementById('snapshot-carousel-track');
     if (!track) return;
 
@@ -181,106 +171,104 @@ function setupSnapshotCarouselDOM() {
         return;
     }
 
-    filteredSnapshots.forEach((snapshot, idx) => {
-        let imageUrls = snapshot.image ? snapshot.image.split(',').map(url => url.trim()).filter(url => url.length > 0) : ['https://images.unsplash.com/photo-1544816155-12df9643f363?w=600'];
-        if (imageUrls.length === 0) imageUrls = ['https://images.unsplash.com/photo-1544816155-12df9643f363?w=600'];
+    // Determine Prev, Current (Main/Larger), and Next indices
+    const total = filteredSnapshots.length;
+    const prevIdx = (currentSnapshotIndex - 1 + total) % total;
+    const currIdx = currentSnapshotIndex;
+    const nextIdx = (currentSnapshotIndex + 1) % total;
+
+    const itemsToDisplay = [
+        { snapshot: filteredSnapshots[prevIdx], position: 'prev' },
+        { snapshot: filteredSnapshots[currIdx], position: 'curr' },
+        { snapshot: filteredSnapshots[nextIdx], position: 'next' }
+    ];
+
+    itemsToDisplay.forEach(({ snapshot, position }) => {
+        let imageUrls = snapshot.image ? snapshot.image.split(',').map(url => url.trim()).filter(url => url.length > 0) : ['logo.jpg'];
+        if (imageUrls.length === 0) imageUrls = ['logo.jpg'];
 
         const card = document.createElement('div');
-        card.id = `snap-card-${idx}`;
-        card.className = 'snapshot-slide absolute w-64 sm:w-80 md:w-[380px] aspect-square rounded-3xl overflow-hidden bg-white border-4 border-white cursor-pointer select-none';
+
+        if (position === 'curr') {
+            // Main card: Larger, fully opaque, sharp
+            card.className = 'absolute z-20 w-72 sm:w-96 aspect-square rounded-3xl overflow-hidden shadow-2xl bg-white border-4 border-white transition-all duration-700 ease-in-out transform scale-100 opacity-100 translate-x-0';
+        } else if (position === 'prev') {
+            // Previous card: Smaller, shifted left, dimmed
+            card.className = 'absolute z-10 w-56 sm:w-72 aspect-square rounded-3xl overflow-hidden shadow-md bg-white border-2 border-white/60 transition-all duration-700 ease-in-out transform scale-90 opacity-60 -translate-x-40 sm:-translate-x-56 blur-[0.5px] pointer-events-none';
+        } else {
+            // Next card: Smaller, shifted right, dimmed
+            card.className = 'absolute z-10 w-56 sm:w-72 aspect-square rounded-3xl overflow-hidden shadow-md bg-white border-2 border-white/60 transition-all duration-700 ease-in-out transform scale-90 opacity-60 translate-x-40 sm:translate-x-56 blur-[0.5px] pointer-events-none';
+        }
 
         card.innerHTML = `
-            <img src="${imageUrls[0]}" alt="BagsByMeer Moment" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1544816155-12df9643f363?w=600';" class="w-full h-full object-cover pointer-events-none transition-transform duration-700 ease-out">
+            <img src="${imageUrls[0]}" alt="${snapshot.title}" class="w-full h-full object-cover">
+            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex items-end p-6">
+                <div>
+                    <span class="text-brand-200 text-xs uppercase tracking-wider font-semibold">${snapshot.category}</span>
+                    <p class="text-white font-serif text-lg sm:text-xl font-bold">${snapshot.title}</p>
+                </div>
+            </div>
         `;
-
-        card.onclick = () => {
-            currentSnapshotIndex = idx;
-            updateSnapshotPositions();
-        };
-
         track.appendChild(card);
     });
-
-    snapshotTrackInitialized = true;
 }
 
-function updateSnapshotPositions() {
-    if (!snapshotTrackInitialized || filteredSnapshots.length === 0) return;
-
-    const total = filteredSnapshots.length;
-
-    filteredSnapshots.forEach((_, idx) => {
-        const card = document.getElementById(`snap-card-${idx}`);
-        if (!card) return;
-
-        let dist = (idx - currentSnapshotIndex) % total;
-        if (dist > total / 2) dist -= total;
-        if (dist < -total / 2) dist += total;
-
-        const isCenter = dist === 0;
-        const absDist = Math.abs(dist);
-        const isMobile = window.innerWidth < 640;
-        const spacing = isMobile ? 260 : 360;
-
-        const translateX = dist * spacing;
-        const scale = isCenter ? 1.08 : Math.max(0.68, 1 - (absDist * 0.22));
-        const opacity = isCenter ? 1 : Math.max(0, 0.7 - ((absDist - 1) * 0.45));
-        const zIndex = 30 - Math.min(25, absDist * 5);
-
-        card.style.transform = `translate3d(${translateX}px, 0, 0) scale(${scale})`;
-        card.style.opacity = opacity;
-        card.style.zIndex = zIndex;
-        card.style.pointerEvents = absDist > 2 ? 'none' : 'auto';
-
-        if (isCenter) {
-            card.classList.add('shadow-2xl', 'border-brand-100');
-            card.classList.remove('shadow-md', 'border-white/60');
-        } else {
-            card.classList.remove('shadow-2xl', 'border-brand-100');
-            card.classList.add('shadow-md', 'border-white/60');
-        }
-    });
-}
-
-// Carousel Autoplay Controls
-let snapshotTimer = null;
-
-function startSnapshotAutoPlay() {
-    stopSnapshotAutoPlay();
-    snapshotTimer = setInterval(() => {
-        if (filteredSnapshots.length > 1) {
-            window.nextSnapshot();
-        }
-    }, 3200);
-}
-
-function stopSnapshotAutoPlay() {
-    if (snapshotTimer) clearInterval(snapshotTimer);
-}
-
+// Manual & Automatic Carousel controls (Right-to-Left slide direction)
 window.nextSnapshot = function () {
     if (filteredSnapshots.length === 0) return;
     currentSnapshotIndex = (currentSnapshotIndex + 1) % filteredSnapshots.length;
-    updateSnapshotPositions();
-};
+    renderSnapshotCarousel();
+}
 
 window.prevSnapshot = function () {
     if (filteredSnapshots.length === 0) return;
     currentSnapshotIndex = (currentSnapshotIndex - 1 + filteredSnapshots.length) % filteredSnapshots.length;
-    updateSnapshotPositions();
-};
-
-window.addEventListener('resize', () => {
-    updateSnapshotPositions();
-});
-
-const carouselTrack = document.getElementById('snapshot-carousel-track');
-if (carouselTrack) {
-    carouselTrack.addEventListener('mouseenter', stopSnapshotAutoPlay);
-    carouselTrack.addEventListener('mouseleave', startSnapshotAutoPlay);
+    renderSnapshotCarousel();
 }
 
-startSnapshotAutoPlay();
+// Automatically transition snapshots from right to left every 3 seconds
+setInterval(() => {
+    if (filteredSnapshots.length > 1) {
+        window.nextSnapshot();
+    }
+}, 3000);
+
+// Automatic Product Slideshow Intervals
+setInterval(() => {
+    document.querySelectorAll('.product-slider-container').forEach(container => {
+        const galleryId = container.getAttribute('data-gallery-id');
+        if (galleryId) window.nextImage(galleryId);
+    });
+}, 4000);
+
+// Hero Tilted Snapshot Ticker Rotation (Every 3 seconds)
+setInterval(() => {
+    const heroImg = document.getElementById('hero-snapshot-ticker');
+    if (heroImg && heroSnapshots.length > 0) {
+        heroImg.style.opacity = '0.3';
+        setTimeout(() => {
+            heroSnapIdx = (heroSnapIdx + 1) % heroSnapshots.length;
+            heroImg.src = heroSnapshots[heroSnapIdx];
+            heroImg.style.opacity = '1';
+        }, 200);
+    }
+}, 3000);
+
+window.nextHeroSnap = function () {
+    const heroImg = document.getElementById('hero-snapshot-ticker');
+    if (heroImg && heroSnapshots.length > 0) {
+        heroSnapIdx = (heroSnapIdx + 1) % heroSnapshots.length;
+        heroImg.src = heroSnapshots[heroSnapIdx];
+    }
+}
+
+window.prevHeroSnap = function () {
+    const heroImg = document.getElementById('hero-snapshot-ticker');
+    if (heroImg && heroSnapshots.length > 0) {
+        heroSnapIdx = (heroSnapIdx - 1 + heroSnapshots.length) % heroSnapshots.length;
+        heroImg.src = heroSnapshots[heroSnapIdx];
+    }
+}
 
 // Product Gallery Control Functions
 window.switchImage = function (galleryId, index) {
@@ -303,7 +291,6 @@ window.switchImage = function (galleryId, index) {
         });
     }
 }
-
 window.nextImage = function (galleryId) {
     const imgElement = document.getElementById(`${galleryId}-img`);
     if (!imgElement) return;
@@ -311,7 +298,6 @@ window.nextImage = function (galleryId) {
     let current = parseInt(imgElement.getAttribute('data-current')) || 0;
     window.switchImage(galleryId, (current + 1) % urls.length);
 }
-
 window.prevImage = function (galleryId) {
     const imgElement = document.getElementById(`${galleryId}-img`);
     if (!imgElement) return;
@@ -324,12 +310,12 @@ window.prevImage = function (galleryId) {
 function renderAdminList() {
     adminProductList.innerHTML = '';
     products.forEach(p => {
-        const firstImg = p.image ? p.image.split(',')[0].trim() : 'https://images.unsplash.com/photo-1544816155-12df9643f363?w=600';
+        const firstImg = p.image ? p.image.split(',')[0].trim() : 'logo.jpg';
         const item = document.createElement('div');
         item.className = 'flex items-center justify-between bg-white p-3 rounded-xl border border-brand-200 text-sm';
         item.innerHTML = `
             <div class="flex items-center space-x-3">
-                <img src="${firstImg}" class="w-10 h-10 object-cover rounded-lg" onerror="this.src='https://images.unsplash.com/photo-1544816155-12df9643f363?w=600'">
+                <img src="${firstImg}" class="w-10 h-10 object-cover rounded-lg">
                 <div>
                     <p class="font-bold text-brand-900">${p.name} <span class="text-xs font-normal text-brand-600">(Rs. ${p.price})</span></p>
                     <p class="text-xs ${p.stock === 'out' ? 'text-red-500' : 'text-green-600'}">${p.stock === 'out' ? 'Out of Stock' : 'In Stock'}</p>
@@ -347,12 +333,12 @@ function renderAdminList() {
 function renderAdminSnapshotList() {
     adminSnapshotList.innerHTML = '';
     snapshots.forEach(s => {
-        const firstImg = s.image ? s.image.split(',')[0].trim() : 'https://images.unsplash.com/photo-1544816155-12df9643f363?w=600';
+        const firstImg = s.image ? s.image.split(',')[0].trim() : 'logo.jpg';
         const item = document.createElement('div');
         item.className = 'flex items-center justify-between bg-white p-3 rounded-xl border border-brand-200 text-sm';
         item.innerHTML = `
             <div class="flex items-center space-x-3">
-                <img src="${firstImg}" class="w-10 h-10 object-cover rounded-lg" onerror="this.src='https://images.unsplash.com/photo-1544816155-12df9643f363?w=600'">
+                <img src="${firstImg}" class="w-10 h-10 object-cover rounded-lg">
                 <div>
                     <p class="font-bold text-brand-900">${s.title}</p>
                     <span class="text-xs font-semibold uppercase text-brand-600">${s.category}</span>
@@ -388,7 +374,7 @@ productForm.addEventListener('submit', async (e) => {
     const price = parseFloat(document.getElementById('p-price').value);
     const stock = document.getElementById('p-stock').value;
     const description = document.getElementById('p-desc').value;
-    let image = document.getElementById('p-image').value.trim() || 'https://images.unsplash.com/photo-1544816155-12df9643f363?w=600';
+    let image = document.getElementById('p-image').value.trim() || 'logo.jpg';
 
     const saveBtn = document.getElementById('save-product-btn');
     saveBtn.textContent = 'Saving...';
@@ -527,7 +513,7 @@ if (tabProductsBtn && tabSnapshotsBtn) {
     });
 }
 
-// Cart Handling
+// Cart & Inquiry Handling
 window.addToCart = function (productId) {
     const product = products.find(p => p.id === productId);
     const existing = cart.find(item => item.id === productId);
@@ -553,10 +539,10 @@ function updateCartUI() {
     let subtotal = 0;
     cart.forEach(item => {
         subtotal += item.price * item.quantity;
-        const firstImg = item.image ? item.image.split(',')[0].trim() : 'https://images.unsplash.com/photo-1544816155-12df9643f363?w=600';
+        const firstImg = item.image ? item.image.split(',')[0].trim() : 'logo.jpg';
         cartItemsContainer.innerHTML += `
             <div class="flex items-center space-x-4 bg-brand-100/50 p-3 rounded-2xl">
-                <img src="${firstImg}" class="w-16 h-16 object-cover rounded-xl" onerror="this.src='https://images.unsplash.com/photo-1544816155-12df9643f363?w=600'">
+                <img src="${firstImg}" class="w-16 h-16 object-cover rounded-xl">
                 <div class="flex-grow">
                     <h4 class="text-sm font-bold text-brand-900">${item.name}</h4>
                     <p class="text-xs text-brand-600">Rs. ${Number(item.price).toFixed(2)} × ${item.quantity}</p>
