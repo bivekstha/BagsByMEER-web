@@ -219,7 +219,12 @@ function setupMarqueeCarousel() {
         if (imageUrls.length === 0) imageUrls = ['logo.jpg'];
 
         const card = document.createElement('div');
+        const halfCard = marqueeCardWidth / 2;
         card.className = 'absolute rounded-3xl overflow-hidden bg-white shadow-md border-4 border-white cursor-pointer select-none transition-shadow duration-300';
+        card.style.left = '50%';
+        card.style.top = '50%';
+        card.style.marginLeft = `-${halfCard}px`;
+        card.style.marginTop = `-${halfCard}px`;
         card.style.width = `${marqueeCardWidth}px`;
         card.style.height = `${marqueeCardWidth}px`;
         card.style.willChange = 'transform, opacity';
@@ -295,7 +300,7 @@ function animateMarquee() {
             zIndex = Math.round(20 + 25 * smoothProgress);
         }
 
-        item.element.style.transform = `translate3d(${relX - marqueeCardWidth / 2}px, 0, 0) scale(${scale})`;
+        item.element.style.transform = `translate3d(${relX}px, 0, 0) scale(${scale})`;
         item.element.style.opacity = opacity;
         item.element.style.zIndex = zIndex;
 
