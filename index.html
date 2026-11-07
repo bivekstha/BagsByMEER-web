@@ -81,7 +81,8 @@
     </div>
 
     <!-- Navigation -->
-    <header class="sticky top-0 z-50 bg-brand-50/95 backdrop-blur-md border-b border-brand-200 transition-all shadow-sm">
+    <header
+        class="sticky top-0 z-50 bg-brand-50/95 backdrop-blur-md border-b border-brand-200 transition-all shadow-sm">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
             <div class="flex items-center space-x-3 sm:space-x-4">
                 <button id="mobile-menu-btn" class="text-brand-800 text-xl focus:outline-none p-2">
@@ -191,7 +192,8 @@
                 </div>
 
                 <!-- Right Side: Constant Logo + Snapshot Slideshow Card (Aligned & Proportional on Mobile) -->
-                <div class="lg:col-span-6 relative flex items-center justify-center gap-3 sm:gap-6 mt-4 lg:mt-0 max-w-full">
+                <div
+                    class="lg:col-span-6 relative flex items-center justify-center gap-3 sm:gap-6 mt-4 lg:mt-0 max-w-full">
                     <div
                         class="relative w-36 xs:w-44 sm:w-56 md:w-60 rounded-2xl sm:rounded-3xl overflow-hidden shadow-xl aspect-[4/5] bg-brand-200 border-2 sm:border-4 border-white flex-shrink-0 z-10">
                         <img src="logo.jpg" alt="BagsByMeer Constant Logo" class="w-full h-full object-cover">
@@ -309,13 +311,17 @@
         </div>
 
         <!-- Continuous Smooth Marquee Carousel Container -->
-        <div class="relative w-full max-w-7xl mx-auto px-4 py-8 flex items-center justify-center min-h-[440px] overflow-hidden">
+        <div
+            class="relative w-full max-w-7xl mx-auto px-4 py-8 flex items-center justify-center min-h-[440px] overflow-hidden">
             <!-- Left & Right Subtle Fade Gradients -->
-            <div class="pointer-events-none absolute left-0 inset-y-0 w-20 sm:w-32 bg-gradient-to-r from-brand-100/90 to-transparent z-10"></div>
-            <div class="pointer-events-none absolute right-0 inset-y-0 w-20 sm:w-32 bg-gradient-to-l from-brand-100/90 to-transparent z-10"></div>
+            <div
+                class="pointer-events-none absolute left-0 inset-y-0 w-20 sm:w-32 bg-gradient-to-r from-brand-100/90 to-transparent z-10">
+            </div>
+            <div
+                class="pointer-events-none absolute right-0 inset-y-0 w-20 sm:w-32 bg-gradient-to-l from-brand-100/90 to-transparent z-10">
+            </div>
 
-            <div id="snapshot-carousel-track"
-                class="relative w-full flex items-center justify-center min-h-[400px]">
+            <div id="snapshot-carousel-track" class="relative w-full flex items-center justify-center min-h-[400px]">
                 <div class="text-center py-12 text-brand-600">Loading snapshots carousel...</div>
             </div>
 
@@ -514,13 +520,16 @@
             </div>
 
             <!-- Tabs -->
-            <div class="flex space-x-4 mb-6 border-b border-brand-200 pb-2">
+            <div class="flex flex-wrap gap-2 sm:gap-4 mb-6 border-b border-brand-200 pb-2">
                 <button id="tab-products-btn"
                     class="admin-tab px-4 py-2 rounded-xl text-sm font-bold bg-brand-800 text-white transition">Manage
                     Inventory</button>
                 <button id="tab-snapshots-btn"
-                    class="admin-tab px-4 py-2 rounded-xl text-sm font-medium bg-brand-100 text-brand-800 hover:bg-brand-200 transition">Manage
+                    class="admin-tab px-4 py-2 rounded-xl text-sm font-medium bg-brand-100 text-brand-800 hover:bg-brand-200 transition">Gallery
                     Snapshots</button>
+                <button id="tab-hero-snapshots-btn"
+                    class="admin-tab px-4 py-2 rounded-xl text-sm font-medium bg-brand-100 text-brand-800 hover:bg-brand-200 transition">Hero
+                    Preview Cards</button>
             </div>
 
             <!-- Tab 1: Products -->
@@ -622,6 +631,33 @@
                 <h4 class="font-bold text-brand-900 text-lg mb-4">Current Snapshots in Database</h4>
                 <div id="admin-snapshot-list" class="space-y-3 max-h-60 overflow-y-auto"></div>
             </div>
+
+            <!-- Tab 3: Hero Preview Snapshots -->
+            <div id="admin-hero-snapshots-section" class="admin-section hidden">
+                <form id="hero-snapshot-form" class="bg-brand-50 p-6 rounded-2xl border border-brand-200 mb-8 space-y-4">
+                    <input type="hidden" id="edit-hero-snapshot-id">
+                    <h4 id="hero-snapshot-form-title" class="font-bold text-brand-900 text-lg">Add Photo to Hero Top Section</h4>
+                    <div>
+                        <label class="block text-xs font-semibold uppercase text-brand-700 mb-1">Photo Title / Label</label>
+                        <input type="text" id="hs-title" required placeholder="e.g. Hero Leather Pouch Preview"
+                            class="w-full bg-white border border-brand-200 rounded-xl px-4 py-2 text-sm focus:outline-brand-600">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold uppercase text-brand-700 mb-1">Image URL(s) - Comma separated for multiple images</label>
+                        <input type="text" id="hs-image" required placeholder="https://img1.jpg, https://img2.jpg..."
+                            class="w-full bg-white border border-brand-200 rounded-xl px-4 py-2 text-sm focus:outline-brand-600">
+                    </div>
+                    <div class="flex justify-end space-x-3 pt-2">
+                        <button type="button" id="reset-hero-snapshot-form"
+                            class="px-4 py-2 bg-gray-200 text-gray-700 rounded-xl text-sm font-medium">Cancel</button>
+                        <button type="submit" id="save-hero-snapshot-btn"
+                            class="px-6 py-2 bg-brand-800 text-white rounded-xl text-sm font-medium hover:bg-brand-700">Save Hero Photo</button>
+                    </div>
+                </form>
+
+                <h4 class="font-bold text-brand-900 text-lg mb-4">Current Hero Ticker Photos</h4>
+                <div id="admin-hero-snapshot-list" class="space-y-3 max-h-60 overflow-y-auto"></div>
+            </div>
         </div>
     </div>
 
@@ -659,13 +695,12 @@
     <!-- Floating Sticky WhatsApp Button -->
     <a id="floating-whatsapp-btn"
         href="https://wa.me/9779861585576?text=Hi%2C%20I%20would%20like%20to%20inquire%20about%20your%20handcrafted%20bags!"
-        target="_blank"
-        rel="noopener noreferrer"
-        aria-label="Chat on WhatsApp"
+        target="_blank" rel="noopener noreferrer" aria-label="Chat on WhatsApp"
         class="fixed bottom-6 right-6 z-40 bg-[#25D366] text-white w-14 h-14 rounded-full shadow-2xl flex items-center justify-center text-3xl hover:bg-[#20ba5a] hover:scale-110 active:scale-95 transition-all duration-300 group">
         <i class="fa-brands fa-whatsapp"></i>
         <!-- Tooltip Label on Hover -->
-        <span class="absolute right-16 bg-brand-900 text-white text-xs font-medium px-3 py-1.5 rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none shadow-md">
+        <span
+            class="absolute right-16 bg-brand-900 text-white text-xs font-medium px-3 py-1.5 rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none shadow-md">
             Chat with us
         </span>
     </a>

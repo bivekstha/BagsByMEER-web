@@ -19,7 +19,8 @@ let products = [];
 let snapshots = [];
 let filteredSnapshots = [];
 let currentSnapshotIndex = 0;
-let heroSnapshots = [];
+let heroSnapshotsList = []; // Independent Hero Snapshot documents
+let heroSnapshots = [];     // Image URLs array for hero rotation
 let heroSnapIdx = 0;
 let cart = [];
 let activeFilter = 'all';
@@ -35,13 +36,16 @@ const closeAdmin = document.getElementById('close-admin');
 const loginForm = document.getElementById('login-form');
 const productForm = document.getElementById('product-form');
 const snapshotForm = document.getElementById('snapshot-form');
+const heroSnapshotForm = document.getElementById('hero-snapshot-form');
 const adminProductList = document.getElementById('admin-product-list');
 const adminSnapshotList = document.getElementById('admin-snapshot-list');
+const adminHeroSnapshotList = document.getElementById('admin-hero-snapshot-list');
 
 // Load Data from Firestore Database on Startup
 async function loadData() {
     await loadProducts();
     await loadSnapshots();
+    await loadHeroSnapshots();
 }
 
 // Load Products from Firestore
@@ -60,19 +64,14 @@ async function loadProducts() {
     }
 }
 
-// Load Snapshots from Firestore
+// Load Snapshots from Firestore (for the Marquee Gallery only)
 async function loadSnapshots() {
     try {
         const querySnapshot = await getDocs(collection(db, "snapshots"));
         snapshots = [];
-        heroSnapshots = [];
         querySnapshot.forEach((docSnap) => {
             const data = docSnap.id ? { id: docSnap.id, ...docSnap.data() } : docSnap.data();
             snapshots.push(data);
-            if (data.image) {
-                const urls = data.image.split(',').map(u => u.trim()).filter(u => u.length > 0);
-                heroSnapshots.push(...urls);
-            }
         });
         filterAndRenderSnapshots(activeSnapshotFilter);
         renderAdminSnapshotList();
@@ -82,6 +81,37 @@ async function loadSnapshots() {
         if (track) {
             track.innerHTML = `<div class="text-center py-8 text-red-600 w-full">Failed to load snapshots gallery.</div>`;
         }
+    }
+}
+
+// Load Hero Preview Snapshots from Firestore (Dedicated Collection)
+async function loadHeroSnapshots() {
+    try {
+        const querySnapshot = await getDocs(collection(db, "hero_snapshots"));
+        heroSnapshotsList = [];
+        heroSnapshots = [];
+        querySnapshot.forEach((docSnap) => {
+            const data = docSnap.id ? { id: docSnap.id, ...docSnap.data() } : docSnap.data();
+            heroSnapshotsList.push(data);
+            if (data.image) {
+                const urls = data.image.split(',').map(u => u.trim()).filter(u => u.length > 0);
+                heroSnapshots.push(...urls);
+            }
+        });
+
+        // Fallback default image if no hero photos uploaded yet
+        if (heroSnapshots.length === 0) {
+            heroSnapshots = ['https://i.ibb.co/HL15342k/Whats-App-Image-2026-10-29-at-22-29-29.jpg'];
+        }
+
+        const heroImg = document.getElementById('hero-snapshot-ticker');
+        if (heroImg && heroSnapshots.length > 0) {
+            heroImg.src = heroSnapshots[0];
+        }
+
+        renderAdminHeroSnapshotList();
+    } catch (error) {
+        console.error("Error loading hero snapshots:", error);
     }
 }
 
@@ -483,6 +513,33 @@ function renderAdminSnapshotList() {
     });
 }
 
+function renderAdminHeroSnapshotList() {
+    adminHeroSnapshotList.innerHTML = '';
+    if (heroSnapshotsList.length === 0) {
+        adminHeroSnapshotList.innerHTML = `<p class="text-xs text-brand-600 italic">No custom hero preview photos yet. Using default bag photo.</p>`;
+        return;
+    }
+    heroSnapshotsList.forEach(s => {
+        const firstImg = s.image ? s.image.split(',')[0].trim() : 'logo.jpg';
+        const item = document.createElement('div');
+        item.className = 'flex items-center justify-between bg-white p-3 rounded-xl border border-brand-200 text-sm';
+        item.innerHTML = `
+            <div class="flex items-center space-x-3">
+                <img src="${firstImg}" class="w-10 h-10 object-cover rounded-lg">
+                <div>
+                    <p class="font-bold text-brand-900">${s.title}</p>
+                    <span class="text-xs text-brand-500 font-mono">${s.image.split(',').length} photo(s)</span>
+                </div>
+            </div>
+            <div class="space-x-2">
+                <button onclick="window.editHeroSnapshot('${s.id}')" class="px-3 py-1 bg-brand-200 text-brand-900 rounded-lg text-xs font-medium">Edit</button>
+                <button onclick="window.deleteHeroSnapshot('${s.id}')" class="px-3 py-1 bg-red-100 text-red-700 rounded-lg text-xs font-medium">Delete</button>
+            </div>
+        `;
+        adminHeroSnapshotList.appendChild(item);
+    });
+}
+
 // Login & Form Submissions
 loginForm.addEventListener('submit', (e) => {
     e.preventDefault();
@@ -594,6 +651,50 @@ window.deleteSnapshot = function (id) {
     }
 }
 
+// Hero Snapshot Form Submit (saves to hero_snapshots collection)
+heroSnapshotForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const editId = document.getElementById('edit-hero-snapshot-id').value;
+    const title = document.getElementById('hs-title').value;
+    const image = document.getElementById('hs-image').value.trim();
+    const saveBtn = document.getElementById('save-hero-snapshot-btn');
+    saveBtn.textContent = 'Saving...';
+    saveBtn.disabled = true;
+    try {
+        const data = { title, image };
+        if (editId) {
+            await updateDoc(doc(db, "hero_snapshots", editId), data);
+        } else {
+            await addDoc(collection(db, "hero_snapshots"), data);
+        }
+        heroSnapshotForm.reset();
+        document.getElementById('edit-hero-snapshot-id').value = '';
+        document.getElementById('hero-snapshot-form-title').textContent = 'Add Photo to Hero Top Section';
+        saveBtn.textContent = 'Save Hero Photo';
+        saveBtn.disabled = false;
+        loadHeroSnapshots();
+    } catch (err) {
+        console.error("Error saving hero snapshot:", err);
+        saveBtn.textContent = 'Save Hero Photo';
+        saveBtn.disabled = false;
+    }
+});
+
+window.editHeroSnapshot = function (id) {
+    const s = heroSnapshotsList.find(item => item.id === id);
+    if (!s) return;
+    document.getElementById('edit-hero-snapshot-id').value = s.id;
+    document.getElementById('hs-title').value = s.title;
+    document.getElementById('hs-image').value = s.image;
+    document.getElementById('hero-snapshot-form-title').textContent = `Edit Hero Photo: ${s.title}`;
+};
+
+window.deleteHeroSnapshot = function (id) {
+    if (confirm("Delete this hero preview photo?")) {
+        deleteDoc(doc(db, "hero_snapshots", id)).then(() => loadHeroSnapshots());
+    }
+};
+
 // Filter button listeners
 document.querySelectorAll('.filter-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
@@ -624,24 +725,28 @@ document.querySelectorAll('.snapshot-filter-btn').forEach(btn => {
 // Admin Tabs Switching
 const tabProductsBtn = document.getElementById('tab-products-btn');
 const tabSnapshotsBtn = document.getElementById('tab-snapshots-btn');
+const tabHeroSnapshotsBtn = document.getElementById('tab-hero-snapshots-btn');
 const adminProductsSection = document.getElementById('admin-products-section');
 const adminSnapshotsSection = document.getElementById('admin-snapshots-section');
+const adminHeroSnapshotsSection = document.getElementById('admin-hero-snapshots-section');
 
-if (tabProductsBtn && tabSnapshotsBtn) {
-    tabProductsBtn.addEventListener('click', () => {
-        tabProductsBtn.className = "admin-tab px-4 py-2 rounded-xl text-sm font-bold bg-brand-800 text-white transition";
-        tabSnapshotsBtn.className = "admin-tab px-4 py-2 rounded-xl text-sm font-medium bg-brand-100 text-brand-800 hover:bg-brand-200 transition";
-        adminProductsSection.classList.remove('hidden');
-        adminSnapshotsSection.classList.add('hidden');
-    });
+const ACTIVE_TAB_CLASS = "admin-tab px-4 py-2 rounded-xl text-sm font-bold bg-brand-800 text-white transition";
+const INACTIVE_TAB_CLASS = "admin-tab px-4 py-2 rounded-xl text-sm font-medium bg-brand-100 text-brand-800 hover:bg-brand-200 transition";
 
-    tabSnapshotsBtn.addEventListener('click', () => {
-        tabSnapshotsBtn.className = "admin-tab px-4 py-2 rounded-xl text-sm font-bold bg-brand-800 text-white transition";
-        tabProductsBtn.className = "admin-tab px-4 py-2 rounded-xl text-sm font-medium bg-brand-100 text-brand-800 hover:bg-brand-200 transition";
-        adminSnapshotsSection.classList.remove('hidden');
-        adminProductsSection.classList.add('hidden');
+function setAdminTab(activeBtn, activeSection) {
+    [tabProductsBtn, tabSnapshotsBtn, tabHeroSnapshotsBtn].forEach(btn => {
+        if (btn) btn.className = INACTIVE_TAB_CLASS;
     });
+    [adminProductsSection, adminSnapshotsSection, adminHeroSnapshotsSection].forEach(sec => {
+        if (sec) sec.classList.add('hidden');
+    });
+    if (activeBtn) activeBtn.className = ACTIVE_TAB_CLASS;
+    if (activeSection) activeSection.classList.remove('hidden');
 }
+
+if (tabProductsBtn) tabProductsBtn.addEventListener('click', () => setAdminTab(tabProductsBtn, adminProductsSection));
+if (tabSnapshotsBtn) tabSnapshotsBtn.addEventListener('click', () => setAdminTab(tabSnapshotsBtn, adminSnapshotsSection));
+if (tabHeroSnapshotsBtn) tabHeroSnapshotsBtn.addEventListener('click', () => setAdminTab(tabHeroSnapshotsBtn, adminHeroSnapshotsSection));
 
 // Cart Drawer Open/Close Helpers
 function openCartDrawer() {
@@ -739,6 +844,12 @@ document.getElementById('reset-snapshot-form').addEventListener('click', () => {
     snapshotForm.reset();
     document.getElementById('edit-snapshot-id').value = '';
     document.getElementById('snapshot-form-title').textContent = 'Add New Snapshot Photo(s)';
+});
+
+document.getElementById('reset-hero-snapshot-form').addEventListener('click', () => {
+    heroSnapshotForm.reset();
+    document.getElementById('edit-hero-snapshot-id').value = '';
+    document.getElementById('hero-snapshot-form-title').textContent = 'Add Photo to Hero Top Section';
 });
 
 document.getElementById('cart-btn').addEventListener('click', openCartDrawer);
