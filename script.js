@@ -220,7 +220,7 @@ function setupMarqueeCarousel() {
 
         const card = document.createElement('div');
         const halfCard = marqueeCardWidth / 2;
-        card.className = 'absolute rounded-3xl overflow-hidden bg-white shadow-md border-4 border-white cursor-pointer select-none transition-shadow duration-300';
+        card.className = 'absolute rounded-3xl overflow-hidden bg-white shadow-md border-4 border-white select-none pointer-events-none transition-shadow duration-300';
         card.style.left = '50%';
         card.style.top = '50%';
         card.style.marginLeft = `-${halfCard}px`;
@@ -232,15 +232,6 @@ function setupMarqueeCarousel() {
         card.innerHTML = `
             <img src="${imageUrls[0]}" alt="BagsByMeer Snapshot" onerror="this.onerror=null; this.src='logo.jpg';" class="w-full h-full object-cover pointer-events-none">
         `;
-
-        // Clicking a card smoothly centers it and triggers hold
-        card.onclick = () => {
-            const stride = marqueeCardStride;
-            const totalSpan = marqueeCards.length * stride;
-            let relX = (idx * stride - marqueeOffset);
-            relX = ((relX + totalSpan / 2) % totalSpan + totalSpan) % totalSpan - totalSpan / 2;
-            targetShift(-relX, idx);
-        };
 
         track.appendChild(card);
         marqueeCards.push({ element: card, initialX: idx * marqueeCardStride, index: idx });
@@ -359,16 +350,6 @@ window.prevSnapshot = function () {
     const stride = marqueeCardStride;
     targetShift(stride);
 };
-
-// Pause on hover
-const carouselTrack = document.getElementById('snapshot-carousel-track');
-if (carouselTrack) {
-    carouselTrack.addEventListener('mouseenter', () => { isMarqueeHovered = true; });
-    carouselTrack.addEventListener('mouseleave', () => { isMarqueeHovered = false; });
-    // Touch support for mobile devices
-    carouselTrack.addEventListener('touchstart', () => { isMarqueeHovered = true; }, { passive: true });
-    carouselTrack.addEventListener('touchend', () => { isMarqueeHovered = false; });
-}
 
 // Window resize handler to recalculate dimensions
 window.addEventListener('resize', () => {
