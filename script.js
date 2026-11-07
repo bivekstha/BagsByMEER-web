@@ -643,6 +643,19 @@ if (tabProductsBtn && tabSnapshotsBtn) {
     });
 }
 
+// Cart Drawer Open/Close Helpers
+function openCartDrawer() {
+    document.getElementById('cart-drawer').classList.remove('hidden');
+    const waBtn = document.getElementById('floating-whatsapp-btn');
+    if (waBtn) waBtn.classList.add('hidden');
+}
+
+function closeCartDrawer() {
+    document.getElementById('cart-drawer').classList.add('hidden');
+    const waBtn = document.getElementById('floating-whatsapp-btn');
+    if (waBtn) waBtn.classList.remove('hidden');
+}
+
 // Cart & Inquiry Handling
 window.addToCart = function (productId) {
     const product = products.find(p => p.id === productId);
@@ -650,7 +663,7 @@ window.addToCart = function (productId) {
     if (existing) existing.quantity += 1;
     else cart.push({ ...product, quantity: 1 });
     updateCartUI();
-    document.getElementById('cart-drawer').classList.remove('hidden');
+    openCartDrawer();
 }
 
 window.changeCartQty = function (productId, delta) {
@@ -728,8 +741,8 @@ document.getElementById('reset-snapshot-form').addEventListener('click', () => {
     document.getElementById('snapshot-form-title').textContent = 'Add New Snapshot Photo(s)';
 });
 
-document.getElementById('cart-btn').addEventListener('click', () => document.getElementById('cart-drawer').classList.remove('hidden'));
-document.getElementById('close-cart').addEventListener('click', () => document.getElementById('cart-drawer').classList.add('hidden'));
+document.getElementById('cart-btn').addEventListener('click', openCartDrawer);
+document.getElementById('close-cart').addEventListener('click', closeCartDrawer);
 document.getElementById('mobile-menu-btn').addEventListener('click', () => document.getElementById('mobile-menu').classList.remove('hidden'));
 document.getElementById('close-mobile-menu').addEventListener('click', () => document.getElementById('mobile-menu').classList.add('hidden'));
 
