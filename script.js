@@ -160,7 +160,19 @@ function filterAndRenderSnapshots(filter) {
     renderSnapshotCarousel();
 }
 
-function renderSnapshotCarousel() {
+// Modern Organic Infinite Smooth Carousel
+let snapshotTrackInitialized = false;
+
+function filterAndRenderSnapshots(filter) {
+    activeSnapshotFilter = filter;
+    filteredSnapshots = filter === 'all' ? snapshots : snapshots.filter(s => s.category === filter);
+    currentSnapshotIndex = 0;
+    snapshotTrackInitialized = false;
+    setupSnapshotCarouselDOM();
+    updateSnapshotPositions();
+}
+
+function setupSnapshotCarouselDOM() {
     const track = document.getElementById('snapshot-carousel-track');
     if (!track) return;
 
@@ -171,67 +183,119 @@ function renderSnapshotCarousel() {
         return;
     }
 
-    // Determine Prev, Current (Main/Larger), and Next indices
-    const total = filteredSnapshots.length;
-    const prevIdx = (currentSnapshotIndex - 1 + total) % total;
-    const currIdx = currentSnapshotIndex;
-    const nextIdx = (currentSnapshotIndex + 1) % total;
-
-    const itemsToDisplay = [
-        { snapshot: filteredSnapshots[prevIdx], position: 'prev' },
-        { snapshot: filteredSnapshots[currIdx], position: 'curr' },
-        { snapshot: filteredSnapshots[nextIdx], position: 'next' }
-    ];
-
-    itemsToDisplay.forEach(({ snapshot, position }) => {
+    filteredSnapshots.forEach((snapshot, idx) => {
         let imageUrls = snapshot.image ? snapshot.image.split(',').map(url => url.trim()).filter(url => url.length > 0) : ['logo.jpg'];
         if (imageUrls.length === 0) imageUrls = ['logo.jpg'];
 
         const card = document.createElement('div');
-
-        if (position === 'curr') {
-            // Main card: Larger, fully opaque, sharp
-            card.className = 'absolute z-20 w-72 sm:w-96 aspect-square rounded-3xl overflow-hidden shadow-2xl bg-white border-4 border-white transition-all duration-700 ease-in-out transform scale-100 opacity-100 translate-x-0';
-        } else if (position === 'prev') {
-            // Previous card: Smaller, shifted left, dimmed
-            card.className = 'absolute z-10 w-56 sm:w-72 aspect-square rounded-3xl overflow-hidden shadow-md bg-white border-2 border-white/60 transition-all duration-700 ease-in-out transform scale-90 opacity-60 -translate-x-40 sm:-translate-x-56 blur-[0.5px] pointer-events-none';
-        } else {
-            // Next card: Smaller, shifted right, dimmed
-            card.className = 'absolute z-10 w-56 sm:w-72 aspect-square rounded-3xl overflow-hidden shadow-md bg-white border-2 border-white/60 transition-all duration-700 ease-in-out transform scale-90 opacity-60 translate-x-40 sm:translate-x-56 blur-[0.5px] pointer-events-none';
-        }
+        card.id = `snap-card-${idx}`;
+        card.className = 'snapshot-slide absolute w-64 sm:w-80 md:w-[380px] aspect-square rounded-3xl overflow-hidden bg-white border-4 border-white cursor-pointer select-none';
 
         card.innerHTML = `
-            <img src="${imageUrls[0]}" alt="${snapshot.title}" class="w-full h-full object-cover">
-            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex items-end p-6">
-                <div>
-                    <span class="text-brand-200 text-xs uppercase tracking-wider font-semibold">${snapshot.category}</span>
-                    <p class="text-white font-serif text-lg sm:text-xl font-bold">${snapshot.title}</p>
-                </div>
-            </div>
+            <img src="${imageUrls[0]}" alt="BagsByMeer Moment" class="w-full h-full object-cover pointer-events-none transition-transform duration-700 ease-out">
         `;
+
+        card.onclick = () => {
+            currentSnapshotIndex = idx;
+            updateSnapshotPositions();
+        };
+
         track.appendChild(card);
+    });
+
+    snapshotTrackInitialized = true;
+}
+
+function updateSnapshotPositions() {
+    if (!snapshotTrackInitialized || filteredSnapshots.length === 0) return;
+
+    const total = filteredSnapshots.length;
+
+    filteredSnapshots.forEach((_, idx) => {
+        const card = document.getElementById(`snap-card-${idx}`);
+        if (!card) return;
+
+        // Calculate circular shortest distance from active center
+        let dist = (idx - currentSnapshotIndex) % total;
+        if (dist > total / 2) dist -= total;
+        if (dist < -total / 2) dist += total;
+
+        const isCenter = dist === 0;
+        const absDist = Math.abs(dist);
+
+        // Responsive card base width for shift calculation
+        const isMobile = window.innerWidth < 640;
+        const spacing = isMobile ? 260 : 360;
+
+        const translateX = dist * spacing;
+        // Peak enlarge at center (scale 1.05), gently drops off to 0.76 as it moves away
+        const scale = isCenter ? 1.08 : Math.max(0.68, 1 - (absDist * 0.22));
+        const opacity = isCenter ? 1 : Math.max(0, 0.7 - ((absDist - 1) * 0.45));
+        const zIndex = 30 - Math.min(25, absDist * 5);
+
+        card.style.transform = `translate3d(${translateX}px, 0, 0) scale(${scale})`;
+        card.style.opacity = opacity;
+        card.style.zIndex = zIndex;
+        card.style.pointerEvents = absDist > 2 ? 'none' : 'auto';
+
+        if (isCenter) {
+            card.classList.add('shadow-2xl', 'border-brand-100');
+            card.classList.remove('shadow-md', 'border-white/60');
+        } else {
+            card.classList.remove('shadow-2xl', 'border-brand-100');
+            card.classList.add('shadow-md', 'border-white/60');
+        }
     });
 }
 
-// Manual & Automatic Carousel controls (Right-to-Left slide direction)
+function renderSnapshotCarousel() {
+    if (!snapshotTrackInitialized) {
+        setupSnapshotCarouselDOM();
+    }
+    updateSnapshotPositions();
+}
+
+// Controls
+let snapshotTimer = null;
+
+function startSnapshotAutoPlay() {
+    stopSnapshotAutoPlay();
+    snapshotTimer = setInterval(() => {
+        if (filteredSnapshots.length > 1) {
+            window.nextSnapshot();
+        }
+    }, 3200);
+}
+
+function stopSnapshotAutoPlay() {
+    if (snapshotTimer) clearInterval(snapshotTimer);
+}
+
 window.nextSnapshot = function () {
     if (filteredSnapshots.length === 0) return;
     currentSnapshotIndex = (currentSnapshotIndex + 1) % filteredSnapshots.length;
-    renderSnapshotCarousel();
-}
+    updateSnapshotPositions();
+};
 
 window.prevSnapshot = function () {
     if (filteredSnapshots.length === 0) return;
     currentSnapshotIndex = (currentSnapshotIndex - 1 + filteredSnapshots.length) % filteredSnapshots.length;
-    renderSnapshotCarousel();
+    updateSnapshotPositions();
+};
+
+// Window resize listener to recalculate card spacing smoothly
+window.addEventListener('resize', () => {
+    updateSnapshotPositions();
+});
+
+// Pause on hover
+const carouselTrack = document.getElementById('snapshot-carousel-track');
+if (carouselTrack) {
+    carouselTrack.addEventListener('mouseenter', stopSnapshotAutoPlay);
+    carouselTrack.addEventListener('mouseleave', startSnapshotAutoPlay);
 }
 
-// Automatically transition snapshots from right to left every 3 seconds
-setInterval(() => {
-    if (filteredSnapshots.length > 1) {
-        window.nextSnapshot();
-    }
-}, 3000);
+startSnapshotAutoPlay();
 
 // Automatic Product Slideshow Intervals
 setInterval(() => {
