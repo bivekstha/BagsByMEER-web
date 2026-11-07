@@ -111,7 +111,7 @@ function renderProducts(filter = 'all') {
             });
 
             imageHtml = `
-                <div class="product-slider-container relative overflow-hidden aspect-[4/3] bg-brand-100 group/gallery" data-gallery-id="${galleryId}">
+                <div class="product-slider-container relative overflow-hidden aspect-square sm:aspect-[4/3] md:aspect-square bg-brand-100 group/gallery" data-gallery-id="${galleryId}">
                     <img id="${galleryId}-img" src="${imageUrls[0]}" alt="${product.name}" class="w-full h-full object-cover group-hover:scale-105 transition-all duration-500 ${isOutOfStock ? 'opacity-50 grayscale' : ''}" data-urls='${JSON.stringify(imageUrls)}' data-current="0">
                     <span class="absolute top-4 left-4 bg-white/90 backdrop-blur-md text-brand-900 text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider">${displayCategory}</span>
                     ${isOutOfStock ? '<span class="absolute top-4 right-4 bg-red-600 text-white text-xs font-bold px-3 py-1 rounded-full uppercase">Out of Stock</span>' : ''}
@@ -124,7 +124,7 @@ function renderProducts(filter = 'all') {
             `;
         } else {
             imageHtml = `
-                <div class="relative overflow-hidden aspect-[4/3] bg-brand-100">
+                <div class="relative overflow-hidden aspect-square sm:aspect-[4/3] md:aspect-square bg-brand-100">
                     <img src="${imageUrls[0]}" alt="${product.name}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500 ${isOutOfStock ? 'opacity-50 grayscale' : ''}">
                     <span class="absolute top-4 left-4 bg-white/90 backdrop-blur-md text-brand-900 text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider">${displayCategory}</span>
                     ${isOutOfStock ? '<span class="absolute top-4 right-4 bg-red-600 text-white text-xs font-bold px-3 py-1 rounded-full uppercase">Out of Stock</span>' : ''}
