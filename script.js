@@ -743,6 +743,16 @@ document.getElementById('reset-snapshot-form').addEventListener('click', () => {
 
 document.getElementById('cart-btn').addEventListener('click', openCartDrawer);
 document.getElementById('close-cart').addEventListener('click', closeCartDrawer);
+
+// Close cart when clicking outside the panel (on the backdrop)
+const cartDrawer = document.getElementById('cart-drawer');
+if (cartDrawer) {
+    cartDrawer.addEventListener('click', (e) => {
+        if (e.target === cartDrawer) {
+            closeCartDrawer();
+        }
+    });
+}
 document.getElementById('mobile-menu-btn').addEventListener('click', () => document.getElementById('mobile-menu').classList.remove('hidden'));
 document.getElementById('close-mobile-menu').addEventListener('click', () => document.getElementById('mobile-menu').classList.add('hidden'));
 
