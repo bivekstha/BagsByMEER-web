@@ -100,6 +100,8 @@ function renderProducts(filter = 'all') {
         let imageUrls = product.image ? product.image.split(',').map(url => url.trim()).filter(url => url.length > 0) : ['logo.jpg'];
         if (imageUrls.length === 0) imageUrls = ['logo.jpg'];
 
+        const displayCategory = product.category === 'tote' ? 'pouch' : product.category;
+
         let imageHtml = '';
         if (imageUrls.length > 1) {
             const galleryId = `gallery-${product.id}`;
@@ -111,7 +113,7 @@ function renderProducts(filter = 'all') {
             imageHtml = `
                 <div class="product-slider-container relative overflow-hidden aspect-[4/3] bg-brand-100 group/gallery" data-gallery-id="${galleryId}">
                     <img id="${galleryId}-img" src="${imageUrls[0]}" alt="${product.name}" class="w-full h-full object-cover group-hover:scale-105 transition-all duration-500 ${isOutOfStock ? 'opacity-50 grayscale' : ''}" data-urls='${JSON.stringify(imageUrls)}' data-current="0">
-                    <span class="absolute top-4 left-4 bg-white/90 backdrop-blur-md text-brand-900 text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider">${product.category}</span>
+                    <span class="absolute top-4 left-4 bg-white/90 backdrop-blur-md text-brand-900 text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider">${displayCategory}</span>
                     ${isOutOfStock ? '<span class="absolute top-4 right-4 bg-red-600 text-white text-xs font-bold px-3 py-1 rounded-full uppercase">Out of Stock</span>' : ''}
                     <div class="absolute bottom-3 inset-x-0 flex items-center justify-between px-4 opacity-90 transition-opacity">
                         <button onclick="window.prevImage('${galleryId}')" class="bg-black/40 hover:bg-black/70 text-white w-7 h-7 rounded-full flex items-center justify-center backdrop-blur-sm text-xs transition"><i class="fa-solid fa-chevron-left"></i></button>
@@ -124,7 +126,7 @@ function renderProducts(filter = 'all') {
             imageHtml = `
                 <div class="relative overflow-hidden aspect-[4/3] bg-brand-100">
                     <img src="${imageUrls[0]}" alt="${product.name}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500 ${isOutOfStock ? 'opacity-50 grayscale' : ''}">
-                    <span class="absolute top-4 left-4 bg-white/90 backdrop-blur-md text-brand-900 text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider">${product.category}</span>
+                    <span class="absolute top-4 left-4 bg-white/90 backdrop-blur-md text-brand-900 text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider">${displayCategory}</span>
                     ${isOutOfStock ? '<span class="absolute top-4 right-4 bg-red-600 text-white text-xs font-bold px-3 py-1 rounded-full uppercase">Out of Stock</span>' : ''}
                 </div>
             `;
@@ -651,6 +653,22 @@ window.addToCart = function (productId) {
     document.getElementById('cart-drawer').classList.remove('hidden');
 }
 
+window.changeCartQty = function (productId, delta) {
+    const itemIndex = cart.findIndex(item => item.id === productId);
+    if (itemIndex > -1) {
+        cart[itemIndex].quantity += delta;
+        if (cart[itemIndex].quantity <= 0) {
+            cart.splice(itemIndex, 1);
+        }
+    }
+    updateCartUI();
+}
+
+window.removeFromCart = function (productId) {
+    cart = cart.filter(item => item.id !== productId);
+    updateCartUI();
+}
+
 function updateCartUI() {
     const totalCount = cart.reduce((sum, item) => sum + item.quantity, 0);
     document.getElementById('cart-badge').textContent = totalCount;
@@ -669,12 +687,20 @@ function updateCartUI() {
         subtotal += item.price * item.quantity;
         const firstImg = item.image ? item.image.split(',')[0].trim() : 'logo.jpg';
         cartItemsContainer.innerHTML += `
-            <div class="flex items-center space-x-4 bg-brand-100/50 p-3 rounded-2xl">
-                <img src="${firstImg}" class="w-16 h-16 object-cover rounded-xl">
-                <div class="flex-grow">
-                    <h4 class="text-sm font-bold text-brand-900">${item.name}</h4>
-                    <p class="text-xs text-brand-600">Rs. ${Number(item.price).toFixed(2)} × ${item.quantity}</p>
+            <div class="flex items-center justify-between bg-brand-100/50 p-3.5 rounded-2xl border border-brand-200/50 gap-3">
+                <img src="${firstImg}" class="w-16 h-16 object-cover rounded-xl border border-brand-200/40">
+                <div class="flex-grow min-w-0">
+                    <h4 class="text-sm font-bold text-brand-900 truncate">${item.name}</h4>
+                    <p class="text-xs text-brand-600 font-medium">Rs. ${Number(item.price).toFixed(2)}</p>
+                    <div class="flex items-center space-x-2.5 mt-1.5">
+                        <button onclick="window.changeCartQty('${item.id}', -1)" class="w-6 h-6 rounded-full bg-white hover:bg-brand-200 border border-brand-200 text-brand-800 text-xs flex items-center justify-center font-bold transition">−</button>
+                        <span class="text-xs font-bold text-brand-900">${item.quantity}</span>
+                        <button onclick="window.changeCartQty('${item.id}', 1)" class="w-6 h-6 rounded-full bg-white hover:bg-brand-200 border border-brand-200 text-brand-800 text-xs flex items-center justify-center font-bold transition">+</button>
+                    </div>
                 </div>
+                <button onclick="window.removeFromCart('${item.id}')" aria-label="Remove item" class="text-red-400 hover:text-red-600 p-2 rounded-lg hover:bg-red-50 transition">
+                    <i class="fa-solid fa-trash-can text-sm"></i>
+                </button>
             </div>`;
     });
     document.getElementById('cart-subtotal').textContent = `Rs. ${subtotal.toFixed(2)}`;
