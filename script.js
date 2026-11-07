@@ -202,12 +202,6 @@ function renderSnapshotCarousel() {
 
         card.innerHTML = `
             <img src="${imageUrls[0]}" alt="${snapshot.title}" class="w-full h-full object-cover">
-            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex items-end p-6">
-                <div>
-                    <span class="text-brand-200 text-xs uppercase tracking-wider font-semibold">${snapshot.category}</span>
-                    <p class="text-white font-serif text-lg sm:text-xl font-bold">${snapshot.title}</p>
-                </div>
-            </div>
         `;
         track.appendChild(card);
     });
