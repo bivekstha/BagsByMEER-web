@@ -152,17 +152,30 @@ function renderProducts(filter = 'all') {
     });
 }
 
-// Filter and render snapshots for the 3D coverflow carousel
+// Continuous Smooth Infinite Marquee Carousel with Dynamic Centered Enlargement
+let marqueeOffset = 0;
+let marqueeSpeed = 0.85; // Base continuous speed in pixels per frame
+let isMarqueeHovered = false;
+let marqueeAnimationId = null;
+let marqueeCards = [];
+let marqueeCardWidth = 320;
+let marqueeCardGap = 28;
+
 function filterAndRenderSnapshots(filter) {
     activeSnapshotFilter = filter;
     filteredSnapshots = filter === 'all' ? snapshots : snapshots.filter(s => s.category === filter);
     currentSnapshotIndex = 0;
-    renderSnapshotCarousel();
+    setupMarqueeCarousel();
 }
 
-function renderSnapshotCarousel() {
+function setupMarqueeCarousel() {
     const track = document.getElementById('snapshot-carousel-track');
     if (!track) return;
+
+    if (marqueeAnimationId) {
+        cancelAnimationFrame(marqueeAnimationId);
+        marqueeAnimationId = null;
+    }
 
     track.innerHTML = '';
 
@@ -171,61 +184,160 @@ function renderSnapshotCarousel() {
         return;
     }
 
-    // Determine Prev, Current (Main/Larger), and Next indices
-    const total = filteredSnapshots.length;
-    const prevIdx = (currentSnapshotIndex - 1 + total) % total;
-    const currIdx = currentSnapshotIndex;
-    const nextIdx = (currentSnapshotIndex + 1) % total;
+    // Determine dimensions responsive to viewport
+    const isMobile = window.innerWidth < 640;
+    marqueeCardWidth = isMobile ? 220 : 300;
+    marqueeCardGap = isMobile ? 18 : 28;
+    const stride = marqueeCardWidth + marqueeCardGap;
 
-    const itemsToDisplay = [
-        { snapshot: filteredSnapshots[prevIdx], position: 'prev' },
-        { snapshot: filteredSnapshots[currIdx], position: 'curr' },
-        { snapshot: filteredSnapshots[nextIdx], position: 'next' }
-    ];
+    // Build enough duplicates to ensure a truly seamless infinite loop
+    const minCardsNeeded = Math.ceil((window.innerWidth + stride * 4) / stride) + 4;
+    let sequence = [];
+    while (sequence.length < Math.max(minCardsNeeded, filteredSnapshots.length * 3)) {
+        sequence = sequence.concat(filteredSnapshots);
+    }
 
-    itemsToDisplay.forEach(({ snapshot, position }) => {
+    marqueeCards = [];
+    marqueeOffset = 0;
+
+    sequence.forEach((snapshot, idx) => {
         let imageUrls = snapshot.image ? snapshot.image.split(',').map(url => url.trim()).filter(url => url.length > 0) : ['logo.jpg'];
         if (imageUrls.length === 0) imageUrls = ['logo.jpg'];
 
         const card = document.createElement('div');
-
-        if (position === 'curr') {
-            // Main card: Larger, fully opaque, sharp
-            card.className = 'absolute z-20 w-72 sm:w-96 aspect-square rounded-3xl overflow-hidden shadow-2xl bg-white border-4 border-white transition-all duration-700 ease-in-out transform scale-100 opacity-100 translate-x-0';
-        } else if (position === 'prev') {
-            // Previous card: Smaller, shifted left, dimmed
-            card.className = 'absolute z-10 w-56 sm:w-72 aspect-square rounded-3xl overflow-hidden shadow-md bg-white border-2 border-white/60 transition-all duration-700 ease-in-out transform scale-90 opacity-60 -translate-x-40 sm:-translate-x-56 blur-[0.5px] pointer-events-none';
-        } else {
-            // Next card: Smaller, shifted right, dimmed
-            card.className = 'absolute z-10 w-56 sm:w-72 aspect-square rounded-3xl overflow-hidden shadow-md bg-white border-2 border-white/60 transition-all duration-700 ease-in-out transform scale-90 opacity-60 translate-x-40 sm:translate-x-56 blur-[0.5px] pointer-events-none';
-        }
+        card.className = 'absolute rounded-3xl overflow-hidden bg-white shadow-md border-4 border-white cursor-pointer select-none transition-shadow duration-300';
+        card.style.width = `${marqueeCardWidth}px`;
+        card.style.height = `${marqueeCardWidth}px`;
+        card.style.willChange = 'transform, opacity';
 
         card.innerHTML = `
-            <img src="${imageUrls[0]}" alt="${snapshot.title}" class="w-full h-full object-cover">
+            <img src="${imageUrls[0]}" alt="BagsByMeer Snapshot" onerror="this.onerror=null; this.src='logo.jpg';" class="w-full h-full object-cover pointer-events-none">
         `;
+
+        // Clicking a card smoothly centers it
+        card.onclick = () => {
+            const cardCenter = (idx * stride - marqueeOffset) + marqueeCardWidth / 2;
+            const delta = cardCenter; // shift toward 0 (center)
+            targetShift(-delta);
+        };
+
         track.appendChild(card);
+        marqueeCards.push({ element: card, initialX: idx * stride });
     });
+
+    // Start continuous animation loop
+    animateMarquee();
 }
 
-// Manual & Automatic Carousel controls (Right-to-Left slide direction)
-window.nextSnapshot = function () {
-    if (filteredSnapshots.length === 0) return;
-    currentSnapshotIndex = (currentSnapshotIndex + 1) % filteredSnapshots.length;
-    renderSnapshotCarousel();
+function animateMarquee() {
+    if (!isMarqueeHovered) {
+        marqueeOffset += marqueeSpeed;
+    }
+
+    const stride = marqueeCardWidth + marqueeCardGap;
+    const totalSpan = marqueeCards.length * stride;
+    const halfWidth = window.innerWidth / 2;
+    const maxRadius = halfWidth + stride;
+
+    marqueeCards.forEach((item) => {
+        // Compute position relative to center of the track (0 is exact center)
+        let relX = (item.initialX - marqueeOffset);
+
+        // Wrap around seamlessly
+        relX = ((relX + totalSpan / 2) % totalSpan + totalSpan) % totalSpan - totalSpan / 2;
+
+        // Dynamic scale & opacity calculation based on distance from center
+        const absDist = Math.abs(relX);
+        const focusZone = stride * 1.5; // region where card begins to enlarge
+
+        let scale = 0.78;
+        let opacity = 0.55;
+        let zIndex = 10;
+
+        if (absDist < focusZone) {
+            // Smooth cosine / quadratic bell curve for enlargement
+            const progress = 1 - (absDist / focusZone);
+            const smoothProgress = Math.sin((progress * Math.PI) / 2); // easing curve
+            scale = 0.78 + (1.12 - 0.78) * smoothProgress; // reaches 1.12x at exact center
+            opacity = 0.55 + (1 - 0.55) * smoothProgress;  // reaches 1.0 opacity
+            zIndex = Math.round(20 + 20 * smoothProgress); // center card floats above
+        }
+
+        // Apply hardware-accelerated 3D transform
+        item.element.style.transform = `translate3d(${relX - marqueeCardWidth / 2}px, 0, 0) scale(${scale})`;
+        item.element.style.opacity = opacity;
+        item.element.style.zIndex = zIndex;
+
+        if (absDist < stride * 0.45) {
+            item.element.classList.add('shadow-2xl', 'border-brand-100');
+            item.element.classList.remove('shadow-md', 'border-white');
+        } else {
+            item.element.classList.remove('shadow-2xl', 'border-brand-100');
+            item.element.classList.add('shadow-md', 'border-white');
+        }
+
+        // Hide cards far off-screen for maximum performance
+        item.element.style.display = absDist > maxRadius ? 'none' : 'block';
+    });
+
+    marqueeAnimationId = requestAnimationFrame(animateMarquee);
 }
+
+// Smooth shift helper for navigation buttons
+let shiftTarget = 0;
+let isShifting = false;
+
+function targetShift(amount) {
+    const startOffset = marqueeOffset;
+    const endOffset = marqueeOffset - amount;
+    const startTime = performance.now();
+    const duration = 500;
+
+    function stepShift(now) {
+        const elapsed = now - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        // Smooth ease-out cubic
+        const ease = 1 - Math.pow(1 - progress, 3);
+        marqueeOffset = startOffset + (endOffset - startOffset) * ease;
+
+        if (progress < 1) {
+            requestAnimationFrame(stepShift);
+        }
+    }
+
+    requestAnimationFrame(stepShift);
+}
+
+// Navigation Controls (Move one item in direction)
+window.nextSnapshot = function () {
+    const stride = marqueeCardWidth + marqueeCardGap;
+    targetShift(-stride);
+};
 
 window.prevSnapshot = function () {
-    if (filteredSnapshots.length === 0) return;
-    currentSnapshotIndex = (currentSnapshotIndex - 1 + filteredSnapshots.length) % filteredSnapshots.length;
-    renderSnapshotCarousel();
+    const stride = marqueeCardWidth + marqueeCardGap;
+    targetShift(stride);
+};
+
+// Pause on hover
+const carouselTrack = document.getElementById('snapshot-carousel-track');
+if (carouselTrack) {
+    carouselTrack.addEventListener('mouseenter', () => { isMarqueeHovered = true; });
+    carouselTrack.addEventListener('mouseleave', () => { isMarqueeHovered = false; });
+    // Touch support for mobile devices
+    carouselTrack.addEventListener('touchstart', () => { isMarqueeHovered = true; }, { passive: true });
+    carouselTrack.addEventListener('touchend', () => { isMarqueeHovered = false; });
 }
 
-// Automatically transition snapshots from right to left every 3 seconds
-setInterval(() => {
-    if (filteredSnapshots.length > 1) {
-        window.nextSnapshot();
+// Window resize handler to recalculate dimensions
+window.addEventListener('resize', () => {
+    const isMobile = window.innerWidth < 640;
+    const newWidth = isMobile ? 220 : 300;
+    const newGap = isMobile ? 18 : 28;
+    if (newWidth !== marqueeCardWidth || newGap !== marqueeCardGap) {
+        setupMarqueeCarousel();
     }
-}, 3000);
+});
 
 // Automatic Product Slideshow Intervals
 setInterval(() => {
