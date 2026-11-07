@@ -152,19 +152,27 @@ function renderProducts(filter = 'all') {
     });
 }
 
-// Continuous Smooth Infinite Marquee Carousel with Dynamic Centered Enlargement
+// Continuous Smooth Infinite Marquee Carousel with Center Hold & Dynamic Sizing
 let marqueeOffset = 0;
-let marqueeSpeed = 0.85; // Base continuous speed in pixels per frame
 let isMarqueeHovered = false;
 let marqueeAnimationId = null;
 let marqueeCards = [];
-let marqueeCardWidth = 320;
+let marqueeCardWidth = 280;
 let marqueeCardGap = 28;
+let marqueeCardStride = 308;
+
+// Hold Center photo state (2.5 seconds hold)
+let isCenterHolding = false;
+let centerHoldTimer = null;
+let lastHeldCardIndex = -1;
 
 function filterAndRenderSnapshots(filter) {
     activeSnapshotFilter = filter;
     filteredSnapshots = filter === 'all' ? snapshots : snapshots.filter(s => s.category === filter);
     currentSnapshotIndex = 0;
+    if (centerHoldTimer) clearTimeout(centerHoldTimer);
+    isCenterHolding = false;
+    lastHeldCardIndex = -1;
     setupMarqueeCarousel();
 }
 
@@ -176,6 +184,12 @@ function setupMarqueeCarousel() {
         cancelAnimationFrame(marqueeAnimationId);
         marqueeAnimationId = null;
     }
+    if (centerHoldTimer) {
+        clearTimeout(centerHoldTimer);
+        centerHoldTimer = null;
+    }
+    isCenterHolding = false;
+    lastHeldCardIndex = -1;
 
     track.innerHTML = '';
 
@@ -184,16 +198,16 @@ function setupMarqueeCarousel() {
         return;
     }
 
-    // Determine dimensions responsive to viewport
+    // Responsive dimensions: compact sub-images
     const isMobile = window.innerWidth < 640;
-    marqueeCardWidth = isMobile ? 220 : 300;
+    marqueeCardWidth = isMobile ? 200 : 270;
     marqueeCardGap = isMobile ? 18 : 28;
-    const stride = marqueeCardWidth + marqueeCardGap;
+    marqueeCardStride = marqueeCardWidth + marqueeCardGap;
 
     // Build enough duplicates to ensure a truly seamless infinite loop
-    const minCardsNeeded = Math.ceil((window.innerWidth + stride * 4) / stride) + 4;
+    const minCardsNeeded = Math.ceil((window.innerWidth + marqueeCardStride * 4) / marqueeCardStride) + 4;
     let sequence = [];
-    while (sequence.length < Math.max(minCardsNeeded, filteredSnapshots.length * 3)) {
+    while (sequence.length < Math.max(minCardsNeeded, filteredSnapshots.length * 4)) {
         sequence = sequence.concat(filteredSnapshots);
     }
 
@@ -214,61 +228,78 @@ function setupMarqueeCarousel() {
             <img src="${imageUrls[0]}" alt="BagsByMeer Snapshot" onerror="this.onerror=null; this.src='logo.jpg';" class="w-full h-full object-cover pointer-events-none">
         `;
 
-        // Clicking a card smoothly centers it
+        // Clicking a card smoothly centers it and triggers hold
         card.onclick = () => {
-            const cardCenter = (idx * stride - marqueeOffset) + marqueeCardWidth / 2;
-            const delta = cardCenter; // shift toward 0 (center)
-            targetShift(-delta);
+            const stride = marqueeCardStride;
+            const totalSpan = marqueeCards.length * stride;
+            let relX = (idx * stride - marqueeOffset);
+            relX = ((relX + totalSpan / 2) % totalSpan + totalSpan) % totalSpan - totalSpan / 2;
+            targetShift(-relX, idx);
         };
 
         track.appendChild(card);
-        marqueeCards.push({ element: card, initialX: idx * stride });
+        marqueeCards.push({ element: card, initialX: idx * marqueeCardStride, index: idx });
     });
 
-    // Start continuous animation loop
     animateMarquee();
 }
 
 function animateMarquee() {
-    if (!isMarqueeHovered) {
-        marqueeOffset += marqueeSpeed;
-    }
-
-    const stride = marqueeCardWidth + marqueeCardGap;
+    const stride = marqueeCardStride;
     const totalSpan = marqueeCards.length * stride;
     const halfWidth = window.innerWidth / 2;
     const maxRadius = halfWidth + stride;
 
-    marqueeCards.forEach((item) => {
-        // Compute position relative to center of the track (0 is exact center)
-        let relX = (item.initialX - marqueeOffset);
+    if (!isMarqueeHovered && !isCenterHolding) {
+        // Continuous glide
+        marqueeOffset += 1.2;
 
-        // Wrap around seamlessly
+        // Check if a new card has entered the exact center (within small threshold)
+        marqueeCards.forEach((item) => {
+            let relX = (item.initialX - marqueeOffset);
+            relX = ((relX + totalSpan / 2) % totalSpan + totalSpan) % totalSpan - totalSpan / 2;
+
+            // When card reaches center and hasn't been held yet, hold for 2.5 seconds
+            if (Math.abs(relX) < 1.4 && item.index !== lastHeldCardIndex) {
+                lastHeldCardIndex = item.index;
+                isCenterHolding = true;
+
+                // Lock directly onto center for crisp display
+                marqueeOffset = item.initialX;
+
+                if (centerHoldTimer) clearTimeout(centerHoldTimer);
+                centerHoldTimer = setTimeout(() => {
+                    isCenterHolding = false;
+                }, 2500); // 2.5 seconds pause
+            }
+        });
+    }
+
+    marqueeCards.forEach((item) => {
+        let relX = (item.initialX - marqueeOffset);
         relX = ((relX + totalSpan / 2) % totalSpan + totalSpan) % totalSpan - totalSpan / 2;
 
-        // Dynamic scale & opacity calculation based on distance from center
         const absDist = Math.abs(relX);
-        const focusZone = stride * 1.5; // region where card begins to enlarge
+        const focusZone = stride * 1.35;
 
-        let scale = 0.78;
-        let opacity = 0.55;
+        // Sub images are smaller (0.64 scale), center card enlarges prominently to 1.15x
+        let scale = 0.64;
+        let opacity = 0.45;
         let zIndex = 10;
 
         if (absDist < focusZone) {
-            // Smooth cosine / quadratic bell curve for enlargement
             const progress = 1 - (absDist / focusZone);
-            const smoothProgress = Math.sin((progress * Math.PI) / 2); // easing curve
-            scale = 0.78 + (1.12 - 0.78) * smoothProgress; // reaches 1.12x at exact center
-            opacity = 0.55 + (1 - 0.55) * smoothProgress;  // reaches 1.0 opacity
-            zIndex = Math.round(20 + 20 * smoothProgress); // center card floats above
+            const smoothProgress = Math.sin((progress * Math.PI) / 2);
+            scale = 0.64 + (1.15 - 0.64) * smoothProgress;
+            opacity = 0.45 + (1.0 - 0.45) * smoothProgress;
+            zIndex = Math.round(20 + 25 * smoothProgress);
         }
 
-        // Apply hardware-accelerated 3D transform
         item.element.style.transform = `translate3d(${relX - marqueeCardWidth / 2}px, 0, 0) scale(${scale})`;
         item.element.style.opacity = opacity;
         item.element.style.zIndex = zIndex;
 
-        if (absDist < stride * 0.45) {
+        if (absDist < stride * 0.4) {
             item.element.classList.add('shadow-2xl', 'border-brand-100');
             item.element.classList.remove('shadow-md', 'border-white');
         } else {
@@ -276,46 +307,51 @@ function animateMarquee() {
             item.element.classList.add('shadow-md', 'border-white');
         }
 
-        // Hide cards far off-screen for maximum performance
         item.element.style.display = absDist > maxRadius ? 'none' : 'block';
     });
 
     marqueeAnimationId = requestAnimationFrame(animateMarquee);
 }
 
-// Smooth shift helper for navigation buttons
-let shiftTarget = 0;
-let isShifting = false;
+// Smooth shift helper for navigation buttons with automatic 2.5s center hold
+function targetShift(amount, targetIdx = -1) {
+    if (centerHoldTimer) clearTimeout(centerHoldTimer);
+    isCenterHolding = false;
 
-function targetShift(amount) {
     const startOffset = marqueeOffset;
     const endOffset = marqueeOffset - amount;
     const startTime = performance.now();
-    const duration = 500;
+    const duration = 600;
 
     function stepShift(now) {
         const elapsed = now - startTime;
         const progress = Math.min(elapsed / duration, 1);
-        // Smooth ease-out cubic
         const ease = 1 - Math.pow(1 - progress, 3);
         marqueeOffset = startOffset + (endOffset - startOffset) * ease;
 
         if (progress < 1) {
             requestAnimationFrame(stepShift);
+        } else {
+            // Once shift arrives at center, trigger 2.5s hold
+            if (targetIdx !== -1) lastHeldCardIndex = targetIdx;
+            isCenterHolding = true;
+            centerHoldTimer = setTimeout(() => {
+                isCenterHolding = false;
+            }, 2500);
         }
     }
 
     requestAnimationFrame(stepShift);
 }
 
-// Navigation Controls (Move one item in direction)
+// Navigation Controls
 window.nextSnapshot = function () {
-    const stride = marqueeCardWidth + marqueeCardGap;
+    const stride = marqueeCardStride;
     targetShift(-stride);
 };
 
 window.prevSnapshot = function () {
-    const stride = marqueeCardWidth + marqueeCardGap;
+    const stride = marqueeCardStride;
     targetShift(stride);
 };
 
