@@ -281,14 +281,14 @@ function animateMarquee() {
         // Sub images are smaller (0.64 scale), center card enlarges prominently to 1.15x
         let scale = 0.64;
         let opacity = 0.45;
-        let zIndex = 10;
+        let zIndex = 2;
 
         if (absDist < focusZone) {
             const progress = 1 - (absDist / focusZone);
             const smoothProgress = Math.sin((progress * Math.PI) / 2);
             scale = 0.64 + (1.15 - 0.64) * smoothProgress;
             opacity = 0.45 + (1.0 - 0.45) * smoothProgress;
-            zIndex = Math.round(20 + 25 * smoothProgress);
+            zIndex = Math.round(5 + 10 * smoothProgress); // Stays between 5 and 15 (well beneath header z-50)
         }
 
         item.element.style.transform = `translate3d(${relX}px, 0, 0) scale(${scale})`;
